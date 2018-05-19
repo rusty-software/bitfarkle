@@ -17,11 +17,26 @@
         val (get val-map dice)]
     (+ val score)))
 
+(defn three-pairs?
+  "Returns true if the dice consist of three pairs, false otherwise"
+  [dice]
+  (let [potential-pairs (partition-all 2 (sort dice))]
+    (and
+      (= 3 (count potential-pairs))
+      (every? #(= true %) (map (fn [[l r]] (= l r)) potential-pairs)))))
+
 (defn score
   "Calculates the score given a collection of dice."
   [dice]
-  (let [score (get basic-score-map dice)]
-    (println "basic-score" score)
-    (if score
-      score
-      (reduce single-dice-scoring 0 dice))))
+  (cond
+    (= [1 2 3 4 5 6] dice) 1500
+
+    (three-pairs? dice) 1500
+
+    (= [1 1 1] dice) 1000
+
+    :else
+    (let [score (get basic-score-map dice)]
+      (if score
+        score
+        (reduce single-dice-scoring 0 dice)))))
