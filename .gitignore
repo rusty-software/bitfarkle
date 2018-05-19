@@ -4,3 +4,4 @@
 /resources/public/js/compiled
 /public/js/compiled
 out
+.lein-failures

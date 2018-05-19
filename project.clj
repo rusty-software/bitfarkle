@@ -5,13 +5,15 @@
                  [re-frame "0.10.5"]
                  [cljsjs/firebase "4.9.0-0"]]
 
-  :plugins [[lein-cljsbuild "1.1.7"]]
+  :plugins [[lein-cljsbuild "1.1.7"]
+            [lein-doo "0.1.10"]]
 
   :min-lein-version "2.5.3"
 
-  :source-paths ["src/clj"]
+  :source-paths ["src/cljs"]
+  :test-paths ["test/cljs"]
 
-  :clean-targets ^{:protect false} ["resources/public/js/compiled" "target"]
+  :clean-targets ^{:protect false} ["resources/public/js/compiled" "public/js/compiled" "target"]
 
   :figwheel {:css-dirs ["resources/public/css"]}
 
