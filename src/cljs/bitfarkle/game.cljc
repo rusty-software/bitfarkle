@@ -18,18 +18,31 @@
     (+ val score)))
 
 (defn three-pairs?
-  "Returns true if the dice consist of three pairs, false otherwise"
+  "Returns true if the dice consist of three pairs; false otherwise."
   [dice]
   (let [potential-pairs (partition-all 2 (sort dice))]
     (and
       (= 3 (count potential-pairs))
       (every? #(= true %) (map (fn [[l r]] (= l r)) potential-pairs)))))
 
+(defn all-the-same?
+  "Returns true all the dice are the same; false otherwise."
+  [dice]
+  (let [val (first dice)]
+    (every? #(= val %) dice)))
+
+(defn double-scoring
+  "Returns the score for "
+  [dice]
+  0)
+
 (defn score
   "Calculates the score given a collection of dice."
   [dice]
   (cond
     (= [1 2 3 4 5 6] dice) 1500
+
+    #_#_(four-or-more-of-a-kind? dice) (double-scoring dice)
 
     (three-pairs? dice) 1500
 
