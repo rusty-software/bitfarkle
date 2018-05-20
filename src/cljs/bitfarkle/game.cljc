@@ -1,8 +1,10 @@
-(ns bitfarkle.game)
+(ns bitfarkle.game
+  (:import (Math)))
 
 (def basic-score-map
   {[5] 50
    [1] 100
+   [1 1 1] 1000
    [2 2 2] 200
    [3 3 3] 300
    [4 4 4] 400
@@ -32,9 +34,12 @@
     (every? #(= val %) dice)))
 
 (defn double-scoring
-  "Returns the score for "
+  "Returns the score for four, five, or six of a kind using the doubling rules."
   [dice]
-  0)
+  (let [[basic-scorer v] (partition-all 3 dice)
+        basic-score (get basic-score-map basic-scorer)
+        multiplier (Math/pow 2 (count v))]
+    (int (* basic-score multiplier))))
 
 (defn score
   "Calculates the score given a collection of dice."
@@ -42,11 +47,11 @@
   (cond
     (= [1 2 3 4 5 6] dice) 1500
 
-    #_#_(four-or-more-of-a-kind? dice) (double-scoring dice)
+    (and (all-the-same? dice)
+         (> (count dice) 3))
+    (double-scoring dice)
 
     (three-pairs? dice) 1500
-
-    (= [1 1 1] dice) 1000
 
     :else
     (let [score (get basic-score-map dice)]
