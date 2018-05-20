@@ -56,5 +56,12 @@
     (is (= 3200 (game/score [4 4 4 4 4 4])))
     (is (= 4000 (game/score [5 5 5 5 5 5])))
     (is (= 4800 (game/score [6 6 6 6 6 6])))
-    (is (= 8000 (game/score [1 1 1 1 1 1]))))
+    (is (= 8000 (game/score [1 1 1 1 1 1])))))
+
+(deftest test-scorable?
+  (is (game/scorable [5 2 3 4 6 6]) "Should be scorable with 5")
+  (is (game/scorable [1 2 3 4 6 6]) "Should be scorable with 1")
+  (is (game/scorable [4 2 3 4 2 2]) "Should be scorable with trips")
+  (is (game/scorable [2 2 6 4 6 4]) "Should be scorable with three pair")
+  (is (not (game/scorable [2 2 3 3 4 6])))
   )

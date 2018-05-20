@@ -9,7 +9,8 @@
    [3 3 3] 300
    [4 4 4] 400
    [5 5 5] 500
-   [6 6 6] 600})
+   [6 6 6] 600
+   [1 2 3 4 5 6] 1500})
 
 (defn single-dice-scoring
   "Returns a score for a single dice."
@@ -45,8 +46,6 @@
   "Calculates the score given a collection of dice."
   [dice]
   (cond
-    (= [1 2 3 4 5 6] dice) 1500
-
     (and (all-the-same? dice)
          (> (count dice) 3))
     (double-scoring dice)
@@ -58,3 +57,17 @@
       (if score
         score
         (reduce single-dice-scoring 0 dice)))))
+
+(defn has-at-least-trips
+  "Returns truthy if the dice at least have three of a kind; false otherwise."
+  [dice]
+  (seq (filter #(> % 2) (map count (vals (group-by identity dice))))))
+
+(defn scorable
+  "Returns truthy if a set of dice contains a scorable combination; false otherwise."
+  [dice]
+  (let [dice (sort dice)]
+    (or
+      (some #(or (= 1 %) (= 5 %)) dice)
+      (has-at-least-trips dice)
+      (three-pairs? dice))))
