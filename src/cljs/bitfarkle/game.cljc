@@ -42,7 +42,7 @@
         multiplier (Math/pow 2 (count v))]
     (int (* basic-score multiplier))))
 
-(defn score
+(defn calculate-score
   "Calculates the score given a collection of dice."
   [dice]
   (cond
