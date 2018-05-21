@@ -59,9 +59,9 @@
         (reduce single-dice-scoring 0 dice)))))
 
 (defn has-at-least-trips
-  "Returns truthy if the dice at least have three of a kind; false otherwise."
+  "Returns true if the dice at least have three of a kind; false otherwise."
   [dice]
-  (seq (filter #(> % 2) (map count (vals (group-by identity dice))))))
+  (> 2 (apply max (vals (frequencies dice)))))
 
 (defn scorable
   "Returns truthy if a set of dice contains a scorable combination; false otherwise."

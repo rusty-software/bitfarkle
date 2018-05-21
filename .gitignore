@@ -5,3 +5,6 @@
 /public/js/compiled
 out
 .lein-failures
+.nrepl-port
+.idea/*
+*.iml
