@@ -58,10 +58,10 @@
         score
         (reduce single-dice-scoring 0 dice)))))
 
-(defn has-at-least-trips
+(defn has-at-least-trips?
   "Returns true if the dice at least have three of a kind; false otherwise."
   [dice]
-  (> 2 (apply max (vals (frequencies dice)))))
+  (< 2 (apply max (vals (frequencies dice)))))
 
 (defn scorable
   "Returns truthy if a set of dice contains a scorable combination; false otherwise."
@@ -69,5 +69,12 @@
   (let [dice (sort dice)]
     (or
       (some #(or (= 1 %) (= 5 %)) dice)
-      (has-at-least-trips dice)
+      (has-at-least-trips? dice)
       (three-pairs? dice))))
+
+(defn roll
+  "Given a number of dice to roll, returns a vector of randomly rolled dice."
+  [num-to-roll]
+  (into []
+        (for [_ (range 1 (inc num-to-roll))]
+          (inc (rand-int 6)))))

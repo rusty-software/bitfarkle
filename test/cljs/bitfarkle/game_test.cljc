@@ -63,5 +63,13 @@
   (is (game/scorable [1 2 3 4 6 6]) "Should be scorable with 1")
   (is (game/scorable [4 2 3 4 2 2]) "Should be scorable with trips")
   (is (game/scorable [2 2 6 4 6 4]) "Should be scorable with three pair")
-  (is (not (game/scorable [2 2 3 3 4 6])))
-  )
+  (is (not (game/scorable [2 2 3 3 4 6]))))
+
+(deftest test-roll
+  (let [legit-value? (fn [dice] (every? #(and (< 0 %) (> 7 %)) dice))
+        six-dice (game/roll 6)
+        three-dice (game/roll 3)]
+    (is (= 6 (count six-dice)))
+    (is (legit-value? six-dice))
+    (is (= 3 (count three-dice)))
+    (is (legit-value? three-dice))))
