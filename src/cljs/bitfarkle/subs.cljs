@@ -44,3 +44,10 @@
        true :over
        false :playing
        nil :not-started))))
+
+(rf/reg-sub
+ :players
+ (fn [_ _]
+    (rf/subscribe [:game]))
+ (fn [game _]
+   (:players game)))

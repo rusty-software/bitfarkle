@@ -1,7 +1,7 @@
 (ns bitfarkle.views
   (:require [re-frame.core :as rf]
             [bitfarkle.subs :as subs]
-            ))
+            [clojure.string :as str]))
 
 (defn listen [query]
   @(rf/subscribe [query]))
@@ -31,10 +31,58 @@
     [:a {:href "https://en.wikipedia.org/wiki/Farkle"} "wiki"] " for information on how to play."]])
 
 (defn no-game []
-  [:span "no game"])
+  [:div
+   [:form {:on-submit (fn [e]
+                        (.preventDefault e)
+                        (println (.. e -target -elements -game -value))
+                        (rf/dispatch [:join-game (str/upper-case (.. e -target -elements -game -value))]))}
+    [:input {:style {:text-transform :uppercase}
+             :type "text"
+             :name "game"
+             :placeholder "Enter Game Code"
+             :required true}]
+    [:button {:type "submit"} "Join Game"]]
+   [:br]
+   [:button {:on-click #(rf/dispatch [:create-game])} "Create new game"]])
+
+(defn pending-game []
+  (let [players (listen :players)]
+    [:div
+     [:button
+      {:on-click #(rf/dispatch [:start-game])}
+      "Start Game"]
+     [:div "---- Players ----"
+      [:div
+       (doall (for [[idx player] (map-indexed vector players)]
+                [:div {:key idx}
+                 (:name player)]))]]]))
+
+(defn active-game []
+  [:div
+   [:table
+    [:thead
+     [:tr
+      [:td "current player info"]]]
+    [:tbody
+     [:tr
+      [:td "Rolled"]]
+     [:tr
+      [:td "Held"]]
+     [:tr
+      [:td
+       [:hr]]]
+     [:tr
+      [:td "Players"]]]]]
+  )
+
+(defn game-over []
+  [:span "game over"])
 
 (defn game []
-  [:span "game"])
+  (condp = (listen :game-state)
+    :over [game-over]
+    :playing [active-game]
+    :not-started [pending-game]))
 
 (defn main-panel []
   [:center
