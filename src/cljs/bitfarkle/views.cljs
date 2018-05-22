@@ -30,8 +30,11 @@
    [:p "Read the "
     [:a {:href "https://en.wikipedia.org/wiki/Farkle"} "wiki"] " for information on how to play."]])
 
-(defn no-game [])
-(defn game [])
+(defn no-game []
+  [:span "no game"])
+
+(defn game []
+  [:span "game"])
 
 (defn main-panel []
   [:center

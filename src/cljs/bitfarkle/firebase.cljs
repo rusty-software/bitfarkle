@@ -1,17 +1,20 @@
 (ns bitfarkle.firebase
   (:require
-    [cljsjs/firebase]))
+    [com.degel.re-frame-firebase :as firebase]
+    [bitfarkle.events]
+    [bitfarkle.subs]))
 
 (defn init
   "Connects to the firebase app.
 
-  DO NOT commit the apiKey or messagingSenderId to git unless you want everyone
-  to be able to mess with your stuff all the time..."
+  None of these values seem to pose a security risk, given the nature of the data being stored for this app."
   []
-  (js/firebase.initializeApp
-    #js {:apiKey ""
-         :authDomain "bitfarkle.firebaseapp.com"
-         :databaseURL "https://bitfarkle.firebaseio.com"
-         :projectId "bitfarkle"
-         :storageBucket "bitfarkle.appspot.com"
-         :messagingSenderId ""}))
+  (firebase/init :firebase-app-info {:apiKey "AIzaSyDIfnQE1UH_ztVNT5s0ZLBSCXo-uoHIKmQ"
+                                     :authDomain "bitfarkle.firebaseapp.com"
+                                     :databaseURL "https://bitfarkle.firebaseio.com"
+                                     :storageBucket "bitfarkle.appspot.com"
+                                     :projectId "bitfarkle"
+                                     :messagingSenderId "457614881377"}
+                 :get-user-sub [:user]
+                 :set-user-event [:set-user]
+                 :default-error-handler [:firebase-error]))
