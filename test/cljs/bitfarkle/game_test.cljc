@@ -73,3 +73,32 @@
     (is (legit-value? six-dice))
     (is (= 3 (count three-dice)))
     (is (legit-value? three-dice))))
+
+(deftest test-score-player
+  (let [player {:held-score 1500
+                :total-score 3500}
+        updated-player (game/score-player player)]
+    (is (= 5000 (:total-score updated-player)))
+    (is (zero? (:held-score updated-player)))))
+
+(deftest test-hold-dice
+  (testing "Dice still available"
+    (let [player {:held-score 100
+                  :total-score 1000
+                  :to-hold [1]
+                  :available-dice 4}
+          updated-player (game/hold-dice player)]
+      (is (= 200 (:held-score updated-player)))
+      (is (= 1000 (:total-score updated-player)))
+      (is (= [] (:to-hold updated-player)))
+      (is (= 3 (:available-dice updated-player)))))
+  (testing "Holding all dice"
+    (let [player {:held-score 100
+                  :total-score 1000
+                  :to-hold [1]
+                  :available-dice 1}
+          updated-player (game/hold-dice player)]
+      (is (= 200 (:held-score updated-player)))
+      (is (= 1000 (:total-score updated-player)))
+      (is (= [] (:to-hold updated-player)))
+      (is (= 6 (:available-dice updated-player))))))

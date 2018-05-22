@@ -78,3 +78,22 @@
   (into []
         (for [_ (range 1 (inc num-to-roll))]
           (inc (rand-int 6)))))
+
+(defn score-player
+  "Given a player, adds the player's held amount to their score."
+  [{:keys [held-score] :as player}]
+  (-> player
+      (update :total-score + held-score)
+      (assoc :held-score 0)))
+
+(defn hold-dice
+  "Given a player, adds the held dice to the held score, resets the held dice, and adjusts the available dice."
+  [{:keys [to-hold available-dice] :as player}]
+  (let [score (calculate-score to-hold)
+        dice-left (if (= available-dice (count to-hold))
+                    6
+                    (- available-dice (count to-hold)))]
+    (-> player
+        (update :held-score + score)
+        (assoc :to-hold []
+               :available-dice dice-left))))
