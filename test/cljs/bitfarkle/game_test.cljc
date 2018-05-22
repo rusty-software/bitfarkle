@@ -113,3 +113,26 @@
       (is (= [6] (:to-hold updated-player)))
       (is (= 3 (:available-dice updated-player)))
       (is (= "Dice must be scorable in order to hold!" (:error updated-player))))))
+
+(deftest test-initialize-player
+  (let [player (game/initialize-player {:name "player1"})]
+    (is (zero? (:held-score player)))
+    (is (zero? (:total-score player)))
+    (is (zero? (:available-dice player)))
+    (is (= [] (:to-hold player)))
+    (is (= "player1" (:name player)))))
+
+(defn initial-player? [p]
+  (let [{:keys [total-score held-score available-dice to-hold]} p]
+    (and (= 0 total-score held-score available-dice (count to-hold)))))
+
+(deftest test-initialize-game
+  (let [game {:players [{:name "player1"} {:name "player2"}]}
+        initialized (game/initialize-game game)]
+    (is (= 0 (:current-player initialized)))
+    (is (not (:game-over? initialized)))
+    (is (= 2 (count (:players initialized))))
+    (is (initial-player? (get-in initialized [:players 0])))
+    (is (= "player1" (:name (get-in initialized [:players 0]))))
+    (is (initial-player? (get-in initialized [:players 1])))
+    (is (= "player2" (:name (get-in initialized [:players 1]))))))

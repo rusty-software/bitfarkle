@@ -100,7 +100,19 @@
           (assoc :to-hold []
                  :available-dice dice-left)))))
 
+(defn initialize-player
+  "Returns a player in the initialized state."
+  [player]
+  {:total-score 0
+   :held-score 0
+   :available-dice 0
+   :to-hold []
+   :name (:name player)})
+
 (defn initialize-game
   "Given a game state, initializes a new game."
-  [game]
-  game)
+  [{:keys [players] :as game}]
+  (let [initialized-players (vec (map initialize-player players))]
+    {:current-player 0
+     :game-over? false
+     :players initialized-players}))
