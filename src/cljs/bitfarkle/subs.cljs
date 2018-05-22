@@ -2,6 +2,11 @@
   (:require [re-frame.core :as rf])
   (:require-macros [reagent.ratom :refer [reaction]]))
 
+(rf/reg-sub
+ :db
+ (fn [db]
+   db))
+
 (rf/reg-sub-raw
  :game
  (fn [_ _]

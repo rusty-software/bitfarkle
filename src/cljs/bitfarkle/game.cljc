@@ -100,7 +100,7 @@
           (assoc :to-hold []
                  :available-dice dice-left)))))
 
-(defn generate-game-code
-  "Generates a relatively random 4-character game code."
-  []
-  (apply str (repeatedly 4 #(rand-nth (map char (range 65 91))))))
+(defn initialize-game
+  "Given a game state, initializes a new game."
+  [game]
+  game)

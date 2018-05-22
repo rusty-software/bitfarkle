@@ -112,5 +112,4 @@
       (is (= 1000 (:total-score updated-player)))
       (is (= [6] (:to-hold updated-player)))
       (is (= 3 (:available-dice updated-player)))
-      (is (= "Dice must be scorable in order to hold!" (:error updated-player)))))
-  )
+      (is (= "Dice must be scorable in order to hold!" (:error updated-player))))))

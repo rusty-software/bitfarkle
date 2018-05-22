@@ -1,30 +1,40 @@
 (ns bitfarkle.views
   (:require [re-frame.core :as rf]
             [bitfarkle.subs :as subs]
-            [clojure.string :as str]))
+            [clojure.string :as str]
+            [cljs.pprint :as pprint]
+            [bitfarkle.config :as config]))
 
 (defn listen [query]
   @(rf/subscribe [query]))
 
 (defn header []
   [:div
+   {:class "text-center"}
    [:h2 "BitFarkle!"]
    (when-let [code (listen :game-code)]
-     [:span {:style {:padding-right 10}} "Game code: " code])
+     [:h4
+      {:class "bg-success"}
+      (str "Game code: " code)])
    (if (listen :logged-in?)
-     [:span [:button {:class "button"
-                      :on-click #(rf/dispatch [:sign-out])}
-       "Sign Out"]]
-     [:span [:button {:on-click #(rf/dispatch [:sign-in])
-                      :class "button"}
-             "Sign in"]
+     [:button
+      {:class "btn btn-warning"
+       :on-click #(rf/dispatch [:sign-out])}
+      "Sign Out"]
+     [:div
+      [:button
+       {:class "btn btn-primary"
+        :on-click #(rf/dispatch [:sign-in])}
+       "Sign in"]
       [:br]
-      [:span {:style {:margin-left "1em"}}
+      [:span
+       {:class "small"}
        "If you click Sign In and nothing happens, check your pop-up blocker!"]])
    [:hr]])
 
 (defn not-signed-in []
   [:div
+   {:class "text-center"}
    [:h3 "Welcome to BitFarkle!"]
    [:p "Sign in with a Google account by clicking above to join the game."]
    [:p "Read the "
@@ -32,36 +42,59 @@
 
 (defn no-game []
   [:div
-   [:form {:on-submit (fn [e]
-                        (.preventDefault e)
-                        (println (.. e -target -elements -game -value))
-                        (rf/dispatch [:join-game (str/upper-case (.. e -target -elements -game -value))]))}
-    [:input {:style {:text-transform :uppercase}
-             :type "text"
-             :name "game"
-             :placeholder "Enter Game Code"
-             :required true}]
-    [:button {:type "submit"} "Join Game"]]
+   [:form
+    {:on-submit (fn [e]
+                  (.preventDefault e)
+                  (println (.. e -target -elements -game -value))
+                  (rf/dispatch [:join-game (str/upper-case (.. e -target -elements -game -value))]))}
+    [:div
+     {:class "form-group row"}
+     [:div
+      {:class "col-sm-2"}
+      [:input
+       {:class "text-uppercase form-control"
+        :id "gameCodeInput"
+        :type "text"
+        :name "game"
+        :placeholder "Enter Game Code"
+        :required true}]]
+     [:button
+      {:class "btn btn-info"
+       :type "submit"}
+      "Join Game"]]]
    [:br]
-   [:button {:on-click #(rf/dispatch [:create-game])} "Create new game"]])
+   [:button
+    {:class "btn btn-danger"
+     :on-click #(rf/dispatch [:create-game])} "Create new game"]])
 
 (defn pending-game []
   (let [players (listen :players)]
     [:div
+     {:class "text-center"}
      [:button
-      {:on-click #(rf/dispatch [:start-game])}
+      {:class "btn btn-primary"
+       :on-click #(rf/dispatch [:start-game])}
       "Start Game"]
-     [:div "---- Players ----"
-      [:div
-       (doall (for [[idx player] (map-indexed vector players)]
-                [:div {:key idx}
-                 (:name player)]))]]]))
+     [:table
+      {:class "table table-bordered"}
+      [:thead
+       [:tr
+        [:th
+         {:class "text-center"}
+         "Players"]]]
+      [:tbody
+       (doall
+         (for [[idx player] (map-indexed vector players)]
+           [:tr
+            {:key idx}
+            [:td
+             (:name player)]]))]]]))
 
 (defn active-game []
   [:div
    [:table
     [:thead
-     [:tr
+     [:th
       [:td "current player info"]]]
     [:tbody
      [:tr
@@ -85,7 +118,8 @@
     :not-started [pending-game]))
 
 (defn main-panel []
-  [:center
+  [:div
+   {:class "container"}
    [header]
    [:div
     (if (= :not-signed-in (listen :game-state))
@@ -93,5 +127,11 @@
       (let [view (listen :view)]
         (if (= :no-game view)
           [no-game]
-          [game])))]]
+          [game])))]
+   (when config/debug?
+     [:div
+      [:hr]
+      [:pre
+       (with-out-str (pprint/pprint @(rf/subscribe [:db])))]])
+   ]
   )

@@ -2,8 +2,9 @@
   (:require [re-frame.core :as rf]
             [bitfarkle.config]
             [bitfarkle.db :as db]
+            [bitfarkle.game :as game]
             [com.degel.re-frame-firebase]
-            ))
+            [bitfarkle.config :as config]))
 
 (rf/reg-event-db
  :initialize-db
@@ -15,10 +16,9 @@
 
 (rf/reg-event-fx
  :sign-in
- (fn [_ _] {:firebase/google-sign-in {:sign-in-method :redirect
-                                      #_(if config/debug?
-                                        :popup
-                                        :redirect)}}))
+ (fn [_ _] {:firebase/google-sign-in {:sign-in-method (if config/debug?
+                                                        :popup
+                                                        :redirect)}}))
 
 (rf/reg-event-db
  :set-user
@@ -56,3 +56,18 @@
                                      (conj (vec players) {:name user-id}))))
                      :on-success #(println "join game success")
                      :on-failure [:firebase-error]}}))
+
+(defn game-event! [event f & args]
+  (let [enabled? (atom true)]
+    (rf/reg-event-fx
+     event
+     (fn [{:keys [db]} _]
+       (js/setTimeout (fn [_] (compare-and-set! enabled? false true)) 500)
+       (if (compare-and-set! enabled? true false)
+         {:firebase/swap! {:path [(keyword (:game-code db))]
+                           :function #(apply f % args)
+                           :on-success #(println (str event " success"))
+                           :on-failure [:firebase-error]}}
+         {})))))
+
+(game-event! :start-game game/initialize-game)
