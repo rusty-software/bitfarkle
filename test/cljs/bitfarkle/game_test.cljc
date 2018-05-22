@@ -101,4 +101,16 @@
       (is (= 200 (:held-score updated-player)))
       (is (= 1000 (:total-score updated-player)))
       (is (= [] (:to-hold updated-player)))
-      (is (= 6 (:available-dice updated-player))))))
+      (is (= 6 (:available-dice updated-player)))))
+  (testing "Illegal hold attempt"
+    (let [player {:held-score 100
+                  :total-score 1000
+                  :to-hold [6]
+                  :available-dice 3}
+          updated-player (game/hold-dice player)]
+      (is (= 100 (:held-score updated-player)))
+      (is (= 1000 (:total-score updated-player)))
+      (is (= [6] (:to-hold updated-player)))
+      (is (= 3 (:available-dice updated-player)))
+      (is (= "Dice must be scorable in order to hold!" (:error updated-player)))))
+  )

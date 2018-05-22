@@ -89,11 +89,18 @@
 (defn hold-dice
   "Given a player, adds the held dice to the held score, resets the held dice, and adjusts the available dice."
   [{:keys [to-hold available-dice] :as player}]
-  (let [score (calculate-score to-hold)
-        dice-left (if (= available-dice (count to-hold))
-                    6
-                    (- available-dice (count to-hold)))]
-    (-> player
-        (update :held-score + score)
-        (assoc :to-hold []
-               :available-dice dice-left))))
+  (if (not (scorable to-hold))
+    (assoc player :error "Dice must be scorable in order to hold!")
+    (let [score (calculate-score to-hold)
+          dice-left (if (= available-dice (count to-hold))
+                      6
+                      (- available-dice (count to-hold)))]
+      (-> player
+          (update :held-score + score)
+          (assoc :to-hold []
+                 :available-dice dice-left)))))
+
+(defn generate-game-code
+  "Generates a relatively random 4-character game code."
+  []
+  (apply str (repeatedly 4 #(rand-nth (map char (range 65 91))))))
