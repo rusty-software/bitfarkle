@@ -110,7 +110,11 @@
        [:button
         {:class "btn btn-success btn-block"
          :on-click #(rf/dispatch [:roll-player-dice])}
-        "Roll"]]]
+        "Roll"]]
+      [:div
+       {:class "col-md-2"
+        :id "rolled-dice-1"}
+       ]]
      [:div
       {:class "row"}
       [:div

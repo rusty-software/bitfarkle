@@ -63,3 +63,4 @@
    (rf/subscribe [:game]))
  (fn [game _]
    (:current-player game)))
+
