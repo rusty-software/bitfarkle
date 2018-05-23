@@ -56,3 +56,10 @@
     (rf/subscribe [:game]))
  (fn [game _]
    (:players game)))
+
+(rf/reg-sub
+ :current-player
+ (fn [_ _]
+   (rf/subscribe [:game]))
+ (fn [game _]
+   (:current-player game)))

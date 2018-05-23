@@ -91,21 +91,41 @@
              (:name player)]]))]]]))
 
 (defn active-game []
-  [:div
-   [:table
-    [:thead
-     [:th
-      [:td "current player info"]]]
-    [:tbody
-     [:tr
-      [:td "Rolled"]]
-     [:tr
-      [:td "Held"]]
-     [:tr
-      [:td
-       [:hr]]]
-     [:tr
-      [:td "Players"]]]]]
+  (let [user (listen :user)
+        players (listen :players)
+        current-player-idx (listen :current-player)
+        #_#_indexed-players (->> (map-indexed vector players)
+                             cycle
+                             (drop-while (fn [[_ player]] (not= (:name player) (:email user))))
+                             (take (count players)))
+        current-player (get players current-player-idx)]
+    (println "players" players)
+    (println "current-player" current-player)
+    [:div
+     [:table
+      {:class "table table-striped"}
+      [:thead
+       [:tr
+        [:th "Current Player:"]
+        [:th (:name current-player)]]]
+      [:tbody
+       [:tr
+        [:td "Rolled"]
+        [:td "todo"]]
+       [:tr
+        [:td "Held"]
+        [:td "todo"]]
+       [:tr
+        [:td
+         {"colSpan" "2"}
+         [:hr]]]
+       (doall
+         (for [player players]
+           [:tr
+            {:key (:name player)}
+            [:td (:name player)]
+            [:td (str "Score: " (:total-score player))]]))
+       ]]])
   )
 
 (defn game-over []
