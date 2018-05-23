@@ -71,6 +71,13 @@
          {})))))
 
 (game-event! :start-game game/initialize-game)
-
 (game-event! :roll-player-dice game/roll-dice)
+
+#_(rf/reg-event-fx
+  :hold-dice
+  (fn [{:keys [db]} [_ dice-num]]
+
+    (let [game (game/hold-dice (:game db) dice-num)]
+      (println "game" game))
+    {:db db}))
 

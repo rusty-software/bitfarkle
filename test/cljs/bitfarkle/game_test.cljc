@@ -98,7 +98,7 @@
                   :total-score 1000
                   :to-hold [1]
                   :available-dice 4}
-          updated-player (game/hold-dice player)]
+          updated-player (game/hold player)]
       (is (= 200 (:held-score updated-player)))
       (is (= 1000 (:total-score updated-player)))
       (is (= [] (:to-hold updated-player)))
@@ -108,7 +108,7 @@
                   :total-score 1000
                   :to-hold [1]
                   :available-dice 1}
-          updated-player (game/hold-dice player)]
+          updated-player (game/hold player)]
       (is (= 200 (:held-score updated-player)))
       (is (= 1000 (:total-score updated-player)))
       (is (= [] (:to-hold updated-player)))
@@ -118,7 +118,7 @@
                   :total-score 1000
                   :to-hold [6]
                   :available-dice 3}
-          updated-player (game/hold-dice player)]
+          updated-player (game/hold player)]
       (is (= 100 (:held-score updated-player)))
       (is (= 1000 (:total-score updated-player)))
       (is (= [6] (:to-hold updated-player)))

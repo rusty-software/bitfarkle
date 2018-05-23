@@ -93,7 +93,8 @@
 (defn active-game []
   (let [players (listen :players)
         current-player (listen :current-player)
-        rolled-dice (listen :rolled-dice)]
+        rolled-dice (listen :rolled-dice)
+        scorable? (listen :scorable?)]
     [:div
      [:div
       {:class "row"
@@ -113,11 +114,11 @@
          :on-click #(rf/dispatch [:roll-player-dice])}
         "Roll"]]
       (doall
-        (for [d rolled-dice]
+        (for [[idx d] (map-indexed vector rolled-dice)]
           [:div
-           ;; TODO: key
-           {:class (str "col-md-2 dice dice-" d)}]))
-      ]
+           {:key idx
+            :class (str "col-md-2 dice dice-" d)
+            :on-click #(rf/dispatch [:hold-dice idx])}]))]
      [:div
       {:class "row"}
       [:div
@@ -128,6 +129,15 @@
      [:div
       {:class "row"}
       [:hr]]
+     [:div
+      {:class "row"}
+      [:div
+       {:class "col-md-12 text-center"}
+       (if scorable?
+         "Scorable roll! Hold some dice!"
+         [:h3
+          {:class "bg-danger"}
+          "FARKLED!!"])]]
      (doall
          (for [player players]
            [:div

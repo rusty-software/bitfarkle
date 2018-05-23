@@ -85,7 +85,9 @@
   [game]
   (let [player (:current-player game)
         available-dice (:available-dice player)
-        updated-player (assoc player :rolled (roll available-dice))]
+        rolled (roll available-dice)
+        updated-player (assoc player :rolled rolled
+                                     :scorable? (boolean (scorable rolled)))]
     (assoc game :current-player updated-player)))
 
 (defn score-player
@@ -95,7 +97,7 @@
       (update :total-score + held-score)
       (assoc :held-score 0)))
 
-(defn hold-dice
+(defn hold
   "Given a player, adds the held dice to the held score, resets the held dice, and adjusts the available dice."
   [{:keys [to-hold available-dice] :as player}]
   (if (not (scorable to-hold))
@@ -108,6 +110,11 @@
           (update :held-score + score)
           (assoc :to-hold []
                  :available-dice dice-left)))))
+
+(defn hold-dice
+  "Given a player, holds the specified dice for the current player."
+  [game dice-num]
+  game)
 
 (defn initialize-player
   "Returns a player in the initialized state."
