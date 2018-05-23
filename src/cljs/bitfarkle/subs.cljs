@@ -64,3 +64,9 @@
  (fn [game _]
    (:current-player game)))
 
+(rf/reg-sub
+  :rolled-dice
+  (fn [_ _]
+    (rf/subscribe [:game]))
+  (fn [game _]
+    (get-in game [:current-player :rolled])))

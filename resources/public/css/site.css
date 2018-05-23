@@ -1,0 +1,24 @@
+.dice {
+  width: 50px;
+  height: 50px;
+  background-size: 100% 100%;
+}
+
+.dice.dice-1 {
+  background-image: url(../img/dice-1-th.png);
+}
+.dice.dice-2 {
+  background-image: url(../img/dice-2-th.png);
+}
+.dice.dice-3 {
+  background-image: url(../img/dice-3-th.png);
+}
+.dice.dice-4 {
+  background-image: url(../img/dice-4-th.png);
+}
+.dice.dice-5 {
+  background-image: url(../img/dice-5-th.png);
+}
+.dice.dice-6 {
+  background-image: url(../img/dice-6-th.png);
+}

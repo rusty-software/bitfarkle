@@ -92,7 +92,8 @@
 
 (defn active-game []
   (let [players (listen :players)
-        current-player (listen :current-player)]
+        current-player (listen :current-player)
+        rolled-dice (listen :rolled-dice)]
     [:div
      [:div
       {:class "row"
@@ -111,10 +112,12 @@
         {:class "btn btn-success btn-block"
          :on-click #(rf/dispatch [:roll-player-dice])}
         "Roll"]]
-      [:div
-       {:class "col-md-2"
-        :id "rolled-dice-1"}
-       ]]
+      (doall
+        (for [d rolled-dice]
+          [:div
+           ;; TODO: key
+           {:class (str "col-md-2 dice dice-" d)}]))
+      ]
      [:div
       {:class "row"}
       [:div
