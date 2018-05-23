@@ -74,11 +74,13 @@
     (is (= 3 (count three-dice)))
     (is (legit-value? three-dice))))
 
-(deftest test-roll-player-dice
+(deftest test-roll-dice
   (let [player {:available-dice 6
                 :rolled []
                 :held []}
-        updated-player (game/roll-player-dice player)]
+        game {:current-player player}
+        updated-game (game/roll-dice game)
+        updated-player (:current-player updated-game)]
     (is (= 6 (:available-dice updated-player)))
     (is (= 6 (count (:rolled updated-player))))
     (is (zero? (count (:held updated-player))))))

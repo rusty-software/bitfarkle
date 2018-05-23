@@ -75,14 +75,18 @@
 (defn roll
   "Given a number of dice to roll, returns a vector of randomly rolled dice."
   [num-to-roll]
-  (into []
-        (for [_ (range 1 (inc num-to-roll))]
-          (inc (rand-int 6)))))
+  (sort
+    (into []
+          (for [_ (range 1 (inc num-to-roll))]
+            (inc (rand-int 6))))))
 
-(defn roll-player-dice
-  "Given a player, rolls the available number of dice and updates the rolled value."
-  [{:keys [available-dice] :as player}]
-  (assoc player :rolled (roll available-dice)))
+(defn roll-dice
+  "Given a game, rolls the current player's available number of dice and updates the rolled value."
+  [game]
+  (let [player (:current-player game)
+        available-dice (:available-dice player)
+        updated-player (assoc player :rolled (roll available-dice))]
+    (assoc game :current-player updated-player)))
 
 (defn score-player
   "Given a player, adds the player's held amount to their score."
