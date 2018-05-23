@@ -79,6 +79,11 @@
         (for [_ (range 1 (inc num-to-roll))]
           (inc (rand-int 6)))))
 
+(defn roll-player-dice
+  "Given a player, rolls the available number of dice and updates the rolled value."
+  [{:keys [available-dice] :as player}]
+  (assoc player :rolled (roll available-dice)))
+
 (defn score-player
   "Given a player, adds the player's held amount to their score."
   [{:keys [held-score] :as player}]
@@ -105,14 +110,14 @@
   [player]
   {:total-score 0
    :held-score 0
-   :available-dice 0
+   :available-dice 6
    :to-hold []
    :name (:name player)})
 
 (defn initialize-game
   "Given a game state, initializes a new game."
-  [{:keys [players] :as game}]
+  [{:keys [players]}]
   (let [initialized-players (vec (map initialize-player players))]
-    {:current-player 0
+    {:current-player (get initialized-players 0)
      :game-over? false
      :players initialized-players}))

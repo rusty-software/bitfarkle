@@ -92,8 +92,7 @@
 
 (defn active-game []
   (let [players (listen :players)
-        current-player-idx (listen :current-player)
-        current-player (get players current-player-idx)]
+        current-player (listen :current-player)]
     [:div
      [:div
       {:class "row"
@@ -109,7 +108,8 @@
       [:div
        {:class "col-md-1"}
        [:button
-        {:class "btn btn-success btn-block"}
+        {:class "btn btn-success btn-block"
+         :on-click #(rf/dispatch [:roll-player-dice])}
         "Roll"]]]
      [:div
       {:class "row"}
@@ -136,32 +136,7 @@
              {:class "col-md-9"}
              (:total-score player)]
             ]))
-
-     #_[:table
-      {:class "table table-striped"}
-      [:thead
-       [:tr
-        [:th "Current Player:"]
-        [:th (:name current-player)]]]
-      [:tbody
-       [:tr
-        [:td "Rolled"]
-        [:td "todo"]]
-       [:tr
-        [:td "Held"]
-        [:td "todo"]]
-       [:tr
-        [:td
-         {"colSpan" "2"}
-         [:hr]]]
-       (doall
-         (for [player players]
-           [:tr
-            {:key (:name player)}
-            [:td (:name player)]
-            [:td (str "Score: " (:total-score player))]]))
-       ]]])
-  )
+     ]))
 
 (defn game-over []
   [:span "game over"])

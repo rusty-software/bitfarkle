@@ -71,3 +71,6 @@
          {})))))
 
 (game-event! :start-game game/initialize-game)
+
+(game-event! :roll-player-dice game/roll-player-dice)
+

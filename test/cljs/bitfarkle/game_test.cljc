@@ -74,6 +74,15 @@
     (is (= 3 (count three-dice)))
     (is (legit-value? three-dice))))
 
+(deftest test-roll-player-dice
+  (let [player {:available-dice 6
+                :rolled []
+                :held []}
+        updated-player (game/roll-player-dice player)]
+    (is (= 6 (:available-dice updated-player)))
+    (is (= 6 (count (:rolled updated-player))))
+    (is (zero? (count (:held updated-player))))))
+
 (deftest test-score-player
   (let [player {:held-score 1500
                 :total-score 3500}
@@ -118,21 +127,21 @@
   (let [player (game/initialize-player {:name "player1"})]
     (is (zero? (:held-score player)))
     (is (zero? (:total-score player)))
-    (is (zero? (:available-dice player)))
+    (is (= 6 (:available-dice player)))
     (is (= [] (:to-hold player)))
     (is (= "player1" (:name player)))))
 
-(defn initial-player? [p]
+(defn player-initialized? [p]
   (let [{:keys [total-score held-score available-dice to-hold]} p]
-    (and (= 0 total-score held-score available-dice (count to-hold)))))
+    (and (= 0 total-score held-score (count to-hold))
+         (= 6 available-dice))))
 
 (deftest test-initialize-game
   (let [game {:players [{:name "player1"} {:name "player2"}]}
         initialized (game/initialize-game game)]
-    (is (= 0 (:current-player initialized)))
-    (is (not (:game-over? initialized)))
     (is (= 2 (count (:players initialized))))
-    (is (initial-player? (get-in initialized [:players 0])))
-    (is (= "player1" (:name (get-in initialized [:players 0]))))
-    (is (initial-player? (get-in initialized [:players 1])))
-    (is (= "player2" (:name (get-in initialized [:players 1]))))))
+    (is (player-initialized? (get-in initialized [:players 0])))
+    (is (player-initialized? (get-in initialized [:players 1])))
+    (is (= "player1" (get-in initialized [:players 0 :name])))
+    (is (= "player2" (get-in initialized [:players 1 :name])))
+    (is (= (get-in initialized [:players 0]) (:current-player initialized)))))
