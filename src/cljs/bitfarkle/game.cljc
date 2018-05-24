@@ -54,21 +54,135 @@
         multiplier (Math/pow 2 (count v))]
     (int (* basic-score multiplier))))
 
+(defn best-basic-scorable-from-idx
+  "Given a set of dice, finds the best basic scorable."
+  [dice idx]
+  (let [single (conj #{} (vector (get dice idx)))
+        trips (set (filter #(< 2 (count %))
+                           (for [i (range (- idx 2) (+ idx 1))]
+                             (into [] (take 3 (drop i dice))))))
+        best-basic-scorable (first (filter #(contains? (set/union single trips) %) basic-scorables-ranked))]
+    (cond
+      (= [1 2 3 4 5 6] dice) dice
+
+      (three-pairs? dice) dice
+
+      best-basic-scorable best-basic-scorable
+
+      :else [])))
+
+(defn score-1 [dice]
+  (get basic-score-map dice 0))
+
+(defn score-multiple-singles [dice]
+  (apply + (map (comp score-1 vector) dice)))
+
+(defn score-3 [dice]
+  (when (= 3 (count dice))
+    (if (apply = dice)
+      (get basic-score-map dice)
+      (score-multiple-singles dice))))
+
+(defn groups-of-count [vals n]
+  (filter #(= n (count %)) vals))
+
+(defn score-4 [dice]
+  (when (= 4 (count dice))
+    (let [four-k-score (if (apply = dice)
+                         (double-scoring dice)
+                         0)
+          dice-groups (group-by identity dice)
+          vals (vals dice-groups)
+          three-k (first (groups-of-count vals 3))
+          three-k-score (get basic-score-map three-k 0)
+          pairs (groups-of-count vals 2)
+          pairs-score (if (seq pairs)
+                           (apply + (map score-multiple-singles pairs))
+                           0)
+          single (first (groups-of-count vals 1))
+          single-score (get basic-score-map single 0)]
+      (max four-k-score
+           (+ three-k-score single-score)
+           pairs-score))))
+
+(defn score-5 [dice]
+  (when (= 5 (count dice))
+    (let [five-k-score (if (apply = dice)
+                         (double-scoring dice)
+                         0)
+          dice-groups (group-by identity dice)
+          vals (vals dice-groups)
+          four-k (groups-of-count vals 4)
+          four-k-score (if (seq four-k)
+                         (double-scoring (first four-k))
+                         0)
+          three-k (groups-of-count vals 3)
+          three-k-score (if (seq three-k)
+                          (get basic-score-map (first three-k) 0)
+                          0)
+          pairs (groups-of-count vals 2)
+          pairs-score (if (seq pairs)
+                           (apply + (map score-multiple-singles pairs))
+                           0)
+          singles (groups-of-count vals 1)
+          singles-score (if (seq singles)
+                          (apply + (map score-1 singles))
+                          0)]
+      (max five-k-score
+           (+ four-k-score singles-score)
+           (+ three-k-score pairs-score)
+           (+ three-k-score singles-score)))))
+
+(defn score-6 [dice]
+  (when (= 6 (count dice))
+    (let [six-k-score (if (apply = dice)
+                        (double-scoring dice)
+                        0)
+          three-pairs-score (if (three-pairs? dice)
+                              1500
+                              0)
+          straight-score (get basic-score-map dice 0)
+          dice-groups (group-by identity dice)
+          vals (vals dice-groups)
+          five-k (groups-of-count vals 5)
+          five-k-score (if (seq five-k)
+                         (double-scoring (first five-k))
+                         0)
+          four-k (groups-of-count vals 4)
+          four-k-score (if (seq four-k)
+                         (double-scoring (first four-k))
+                         0)
+          three-k (groups-of-count vals 3)
+          three-k-score (if (seq three-k)
+                          (apply + (map score-3 three-k))
+                          0)
+          pairs (groups-of-count vals 2)
+          pairs-score (if (seq pairs)
+                           (apply + (map score-multiple-singles pairs))
+                           0)
+          singles (groups-of-count vals 1)
+          singles-score (if (seq singles)
+                          (apply + (map score-1 singles))
+                          0)
+          ]
+      (max six-k-score
+           three-pairs-score
+           straight-score
+           (+ five-k-score singles-score)
+           (+ four-k-score pairs-score singles-score)
+           (+ three-k-score pairs-score singles-score)))))
+
 (defn calculate-score
-  "Calculates the score given a collection of dice."
+  "Calculates every combination of scorables, returning the highest score value."
   [dice]
-  (cond
-    (and (all-the-same? dice)
-         (> (count dice) 3))
-    (double-scoring dice)
-
-    (three-pairs? dice) 1500
-
-    :else
-    (let [score (get basic-score-map dice)]
-      (if score
-        score
-        (reduce single-dice-scoring 0 dice)))))
+  (condp = (count dice)
+             6 (score-6 dice)
+             5 (score-5 dice)
+             4 (score-4 dice)
+             3 (score-3 dice)
+             2 (score-multiple-singles dice)
+             1 (score-1 dice)
+             ))
 
 (defn has-at-least-trips?
   "Returns true if the dice at least have three of a kind; false otherwise."
@@ -123,10 +237,6 @@
           (assoc :to-hold []
                  :available-dice dice-left)))))
 
-(defn hold-dice
-  "Given a player, holds the specified dice for the current player."
-  [game dice-num]
-  game)
 
 (defn initialize-player
   "Returns a player in the initialized state."
@@ -145,19 +255,17 @@
      :game-over? false
      :players initialized-players}))
 
-(defn best-basic-scorable-from-idx
-  "Given a set of dice, finds the best basic scorable."
-  [dice idx]
-  (let [single (conj #{} (vector (get dice idx)))
-        trips (set (filter #(< 2 (count %))
-                           (for [i (range (- idx 2) (+ idx 1))]
-                             (into [] (take 3 (drop i dice))))))
-        best-basic-scorable (first (filter #(contains? (set/union single trips) %) basic-scorables-ranked))]
-    (cond
-      (= [1 2 3 4 5 6] dice) dice
 
-      (three-pairs? dice) dice
 
-      best-basic-scorable best-basic-scorable
+#_(defn add-to-hold
+  "Given a player and available dice index, adds the best basic scorable to the hold."
+  [{:keys [available-dice] :as player} idx]
+  (let [scorable (best-basic-scorable-from-idx available-dice idx)
+        held-score ()]
+    )
+  player)
 
-      :else [])))
+(defn hold-dice
+  "Given a game, holds the specified dice for the current player."
+  [game dice-num]
+  game)

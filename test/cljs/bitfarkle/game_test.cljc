@@ -15,48 +15,69 @@
     (is (not (game/three-pairs? [2 2 4 4 3])))))
 
 (deftest test-scoring
-  (testing "Single-dice. Also, I loathe that English now accepts 'dice' as the singular form..."
+  (testing "1s"
     (is (= 50 (game/calculate-score [5])))
     (is (= 100 (game/calculate-score [1]))))
-  (testing "Three-of-a-kind"
+  (testing "2s, 1s+1s"
+    (is (= 100 (game/calculate-score [5 5])))
+    (is (= 200 (game/calculate-score [1 1]))))
+  (testing "1s+1s"
+    (is (= 150 (game/calculate-score [1 5]))))
+  (testing "3k"
     (is (= 200 (game/calculate-score [2 2 2])))
     (is (= 300 (game/calculate-score [3 3 3])))
     (is (= 400 (game/calculate-score [4 4 4])))
     (is (= 500 (game/calculate-score [5 5 5])))
-    (is (= 600 (game/calculate-score [6 6 6]))))
-  (testing "Two-dice"
-    (is (= 100 (game/calculate-score [5 5])))
-    (is (= 150 (game/calculate-score [1 5]))))
-  (testing "Three-dice"
-    (is (= 200 (game/calculate-score [5 1 5])))
+    (is (= 600 (game/calculate-score [6 6 6])))
+    (is (= 1000 (game/calculate-score [1 1 1]))))
+  (testing "2s+1s"
     (is (= 200 (game/calculate-score [1 5 5])))
-    (is (= 250 (game/calculate-score [1 5 1])))
     (is (= 250 (game/calculate-score [1 1 5]))))
-  (testing "Special cases"
-    (is (= 1000 (game/calculate-score [1 1 1])))
-    (is (= 1500 (game/calculate-score [1 2 3 4 5 6])))
-    (is (= 1500 (game/calculate-score [2 2 4 4 6 6]))))
-  (testing "Four-of-a-kind"
+  (testing "4k"
     (is (= 400 (game/calculate-score [2 2 2 2])))
     (is (= 600 (game/calculate-score [3 3 3 3])))
     (is (= 800 (game/calculate-score [4 4 4 4])))
     (is (= 1000 (game/calculate-score [5 5 5 5])))
     (is (= 1200 (game/calculate-score [6 6 6 6])))
     (is (= 2000 (game/calculate-score [1 1 1 1]))))
-  (testing "Five-of-a-kind"
+  (testing "3k+1s"
+    (is (= 500 (game/calculate-score [1 4 4 4]))))
+  (testing "2s+2s"
+    (is (= 300 (game/calculate-score [1 1 5 5]))))
+  (testing "5k"
     (is (= 800 (game/calculate-score [2 2 2 2 2])))
     (is (= 1200 (game/calculate-score [3 3 3 3 3])))
     (is (= 1600 (game/calculate-score [4 4 4 4 4])))
     (is (= 2000 (game/calculate-score [5 5 5 5 5])))
     (is (= 2400 (game/calculate-score [6 6 6 6 6])))
     (is (= 4000 (game/calculate-score [1 1 1 1 1]))))
-  (testing "Six-of-a-kind"
+  (testing "4k+1s"
+    (is (= 500 (game/calculate-score [1 2 2 2 2]))))
+  (testing "3k+2s"
+    (is (= 1100 (game/calculate-score [1 1 1 5 5]))))
+  (testing "3k+1s+1s"
+    (is (= 350 (game/calculate-score [1 2 2 2 5]))))
+  (testing "6k"
     (is (= 1600 (game/calculate-score [2 2 2 2 2 2])))
     (is (= 2400 (game/calculate-score [3 3 3 3 3 3])))
     (is (= 3200 (game/calculate-score [4 4 4 4 4 4])))
     (is (= 4000 (game/calculate-score [5 5 5 5 5 5])))
     (is (= 4800 (game/calculate-score [6 6 6 6 6 6])))
-    (is (= 8000 (game/calculate-score [1 1 1 1 1 1])))))
+    (is (= 8000 (game/calculate-score [1 1 1 1 1 1]))))
+  (testing "Str"
+    (is (= 1500 (game/calculate-score [1 2 3 4 5 6]))))
+  (testing "3p"
+    (is (= 1500 (game/calculate-score [2 2 4 4 6 6])))
+    (is (= 1500 (game/calculate-score [1 1 4 4 5 5]))))
+  (testing "5k+1s"
+    (is (= 900 (game/calculate-score [1 2 2 2 2 2]))))
+  (testing "4k+2s"
+    (is (= 2100 (game/calculate-score [1 1 1 1 5 5]))))
+  (testing "3k+3k"
+    (is (= 800 (game/calculate-score [2 2 2 6 6 6]))))
+  (testing "3k+2s+1s"
+    (is (= 550 (game/calculate-score [1 1 3 3 3 5]))))
+  )
 
 (deftest test-scorable?
   (is (game/scorable [5 2 3 4 6 6]) "Should be scorable with 5")
