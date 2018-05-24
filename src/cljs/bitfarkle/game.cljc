@@ -4,13 +4,24 @@
 (def basic-score-map
   {[5] 50
    [1] 100
-   [1 1 1] 1000
    [2 2 2] 200
    [3 3 3] 300
    [4 4 4] 400
    [5 5 5] 500
    [6 6 6] 600
+   [1 1 1] 1000
    [1 2 3 4 5 6] 1500})
+
+(def basic-scorables-ranked
+  [[1 2 3 4 5 6]
+   [1 1 1]
+   [6 6 6]
+   [5 5 5]
+   [4 4 4]
+   [3 3 3]
+   [2 2 2]
+   [1]
+   [5]])
 
 (defn single-dice-scoring
   "Returns a score for a single dice."
@@ -132,3 +143,19 @@
     {:current-player (get initialized-players 0)
      :game-over? false
      :players initialized-players}))
+
+(defn best-basic-scorable-from-idx
+  "Given a set of dice, finds the best basic scorable."
+  [dice idx]
+  (println dice)
+  (println idx)
+  (let [single (vector (get dice idx))
+        trips (set (for [i (range (- idx 2) (+ idx 1))]
+                     (into [] (take 3 (drop i dice)))))
+        #_#_singles (map vector (filter #(or (= 1 %) (= 5 %)) dice))
+        #_#_trips (filter #(< 2 (count %)) (for [idx (range 6)]
+                                         (into [] (->> dice
+                                                       (drop idx)
+                                                       (take 3)))))]
+    (println "single" single)
+    (println "trips" trips)))

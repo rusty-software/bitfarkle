@@ -147,3 +147,25 @@
     (is (= "player1" (get-in initialized [:players 0 :name])))
     (is (= "player2" (get-in initialized [:players 1 :name])))
     (is (= (get-in initialized [:players 0]) (:current-player initialized)))))
+
+(deftest test-best-basic-scorable-from-idx
+  (is (= [5] (game/best-basic-scorable-from-idx [2 2 3 3 4 5] 5)))
+  ;(is (= [1] (game/best-basic-scorable-from-idx [1 2 2 3 3 4] 0)))
+  ;(is (= [1 1 1] (game/best-basic-scorable-from-idx [1 1 1 2 3 5] 0)))
+  ;(is (= [1 1 1] (game/best-basic-scorable-from-idx [1 1 1 2 3 5] 1)))
+  ;(is (= [1 1 1] (game/best-basic-scorable-from-idx [1 1 1 2 3 5] 2)))
+  ;(is (= [2 2 2] (game/best-basic-scorable-from-idx [1 2 2 2 3 5] 1)))
+  ;(is (= [2 2 2] (game/best-basic-scorable-from-idx [1 2 2 2 3 5] 2)))
+  ;(is (= [2 2 2] (game/best-basic-scorable-from-idx [1 2 2 2 3 5] 3)))
+  ;(is (= [2 2 4 4 6 6] (game/best-basic-scorable-from-idx [2 2 4 4 6 6] 0)))
+  ;(is (= [2 2 4 4 6 6] (game/best-basic-scorable-from-idx [2 2 4 4 6 6] 1)))
+  ;(is (= [2 2 4 4 6 6] (game/best-basic-scorable-from-idx [2 2 4 4 6 6] 2)))
+  ;(is (= [2 2 4 4 6 6] (game/best-basic-scorable-from-idx [2 2 4 4 6 6] 3)))
+  ;(is (= [2 2 4 4 6 6] (game/best-basic-scorable-from-idx [2 2 4 4 6 6] 4)))
+  ;(is (= [2 2 4 4 6 6] (game/best-basic-scorable-from-idx [2 2 4 4 6 6] 5)))
+  )
+
+#_(deftest test-best-score
+  (is (= [1 1 1] (game/best-score [1 1 1 2 3 5])))
+  (is (= [1 1 1] (game/best-score [1 1 1 2 3 5])))
+  )
