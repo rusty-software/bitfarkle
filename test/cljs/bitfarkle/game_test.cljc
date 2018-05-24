@@ -14,7 +14,7 @@
   (testing "Five dice is false by default"
     (is (not (game/three-pairs? [2 2 4 4 3])))))
 
-(deftest test-scoring
+(deftest test-calculate-score
   (testing "1s"
     (is (= 50 (game/calculate-score [5])))
     (is (= 100 (game/calculate-score [1]))))

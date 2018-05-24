@@ -86,103 +86,45 @@
 (defn groups-of-count [vals n]
   (filter #(= n (count %)) vals))
 
-(defn score-4 [dice]
-  (when (= 4 (count dice))
-    (let [four-k-score (if (apply = dice)
-                         (double-scoring dice)
-                         0)
-          dice-groups (group-by identity dice)
-          vals (vals dice-groups)
-          three-k (first (groups-of-count vals 3))
-          three-k-score (get basic-score-map three-k 0)
-          pairs (groups-of-count vals 2)
-          pairs-score (if (seq pairs)
-                           (apply + (map score-multiple-singles pairs))
-                           0)
-          single (first (groups-of-count vals 1))
-          single-score (get basic-score-map single 0)]
-      (max four-k-score
-           (+ three-k-score single-score)
-           pairs-score))))
-
-(defn score-5 [dice]
-  (when (= 5 (count dice))
-    (let [five-k-score (if (apply = dice)
-                         (double-scoring dice)
-                         0)
-          dice-groups (group-by identity dice)
-          vals (vals dice-groups)
-          four-k (groups-of-count vals 4)
-          four-k-score (if (seq four-k)
-                         (double-scoring (first four-k))
-                         0)
-          three-k (groups-of-count vals 3)
-          three-k-score (if (seq three-k)
-                          (get basic-score-map (first three-k) 0)
-                          0)
-          pairs (groups-of-count vals 2)
-          pairs-score (if (seq pairs)
-                           (apply + (map score-multiple-singles pairs))
-                           0)
-          singles (groups-of-count vals 1)
-          singles-score (if (seq singles)
-                          (apply + (map score-1 singles))
-                          0)]
-      (max five-k-score
-           (+ four-k-score singles-score)
-           (+ three-k-score pairs-score)
-           (+ three-k-score singles-score)))))
-
-(defn score-6 [dice]
-  (when (= 6 (count dice))
-    (let [six-k-score (if (apply = dice)
-                        (double-scoring dice)
-                        0)
-          three-pairs-score (if (three-pairs? dice)
-                              1500
-                              0)
-          straight-score (get basic-score-map dice 0)
-          dice-groups (group-by identity dice)
-          vals (vals dice-groups)
-          five-k (groups-of-count vals 5)
-          five-k-score (if (seq five-k)
-                         (double-scoring (first five-k))
-                         0)
-          four-k (groups-of-count vals 4)
-          four-k-score (if (seq four-k)
-                         (double-scoring (first four-k))
-                         0)
-          three-k (groups-of-count vals 3)
-          three-k-score (if (seq three-k)
-                          (apply + (map score-3 three-k))
-                          0)
-          pairs (groups-of-count vals 2)
-          pairs-score (if (seq pairs)
-                           (apply + (map score-multiple-singles pairs))
-                           0)
-          singles (groups-of-count vals 1)
-          singles-score (if (seq singles)
-                          (apply + (map score-1 singles))
-                          0)
-          ]
-      (max six-k-score
-           three-pairs-score
-           straight-score
-           (+ five-k-score singles-score)
-           (+ four-k-score pairs-score singles-score)
-           (+ three-k-score pairs-score singles-score)))))
-
 (defn calculate-score
   "Calculates every combination of scorables, returning the highest score value."
   [dice]
-  (condp = (count dice)
-             6 (score-6 dice)
-             5 (score-5 dice)
-             4 (score-4 dice)
-             3 (score-3 dice)
-             2 (score-multiple-singles dice)
-             1 (score-1 dice)
-             ))
+  (let [dice-groups (group-by identity dice)
+        vals (vals dice-groups)
+        six-k (groups-of-count vals 6)
+        six-k-score (if (seq six-k)
+                      (double-scoring (first six-k))
+                      0)
+        three-pairs-score (if (three-pairs? dice)
+                            1500
+                            0)
+        straight-score (get basic-score-map dice 0)
+        five-k (groups-of-count vals 5)
+        five-k-score (if (seq five-k)
+                       (double-scoring (first five-k))
+                       0)
+        four-k (groups-of-count vals 4)
+        four-k-score (if (seq four-k)
+                       (double-scoring (first four-k))
+                       0)
+        three-k (groups-of-count vals 3)
+        three-k-score (if (seq three-k)
+                        (apply + (map score-3 three-k))
+                        0)
+        pairs (groups-of-count vals 2)
+        pairs-score (if (seq pairs)
+                      (apply + (map score-multiple-singles pairs))
+                      0)
+        singles (groups-of-count vals 1)
+        singles-score (if (seq singles)
+                        (apply + (map score-1 singles))
+                        0)]
+    (max six-k-score
+         three-pairs-score
+         straight-score
+         (+ five-k-score singles-score)
+         (+ four-k-score pairs-score singles-score)
+         (+ three-k-score pairs-score singles-score))))
 
 (defn has-at-least-trips?
   "Returns true if the dice at least have three of a kind; false otherwise."
