@@ -112,10 +112,14 @@
        [:button
         {:class "btn btn-success btn-block"
          :on-click #(rf/dispatch [:roll-player-dice])}
-        "Roll"]
+        "Roll"]]
+      [:div
+       {:class "col-md-1"}
        [:button
         {:class "btn btn-danger btn-block"}
-        "Score"]]
+        "Score"]]]
+     [:div
+      {:class "row"}
       (doall
         (for [[idx d] (map-indexed vector rolled-dice)]
           [:div
