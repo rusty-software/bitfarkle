@@ -72,8 +72,8 @@
     (get-in game [:current-player :rolled])))
 
 (rf/reg-sub
-  :scorable?
+  :scorable
   (fn [_ _]
     (rf/subscribe [:game]))
   (fn [game _]
-    (get-in game [:current-player :scorable?])))
+    (get-in game [:current-player :scorable])))

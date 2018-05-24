@@ -94,7 +94,7 @@
   (let [players (listen :players)
         current-player (listen :current-player)
         rolled-dice (listen :rolled-dice)
-        scorable? (listen :scorable?)]
+        scorable (listen :scorable)]
     [:div
      [:div
       {:class "row"
@@ -112,7 +112,10 @@
        [:button
         {:class "btn btn-success btn-block"
          :on-click #(rf/dispatch [:roll-player-dice])}
-        "Roll"]]
+        "Roll"]
+       [:button
+        {:class "btn btn-danger btn-block"}
+        "Score"]]
       (doall
         (for [[idx d] (map-indexed vector rolled-dice)]
           [:div
@@ -121,23 +124,23 @@
             :on-click #(rf/dispatch [:hold-dice idx])}]))]
      [:div
       {:class "row"}
-      [:div
-       {:class "col-md-1"}
-       [:button
-        {:class "btn btn-danger btn-block"}
-        "Score"]]]
-     [:div
-      {:class "row"}
       [:hr]]
      [:div
       {:class "row"}
       [:div
        {:class "col-md-12 text-center"}
-       (if scorable?
-         "Scorable roll! Hold some dice!"
+       (cond
+         (nil? scorable)
+         ""
+
+         (not scorable)
          [:h3
           {:class "bg-danger"}
-          "FARKLED!!"])]]
+          "FARKLED!!"]
+
+         :else
+         "Scorable roll! Hold some dice!"
+         )]]
      (doall
          (for [player players]
            [:div

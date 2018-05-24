@@ -87,7 +87,7 @@
         available-dice (:available-dice player)
         rolled (roll available-dice)
         updated-player (assoc player :rolled rolled
-                                     :scorable? (boolean (scorable rolled)))]
+                                     :scorable (scorable rolled))]
     (assoc game :current-player updated-player)))
 
 (defn score-player
