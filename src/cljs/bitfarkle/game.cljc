@@ -1,4 +1,5 @@
 (ns bitfarkle.game
+  (:require [clojure.set :as set])
   (:import (Math)))
 
 (def basic-score-map
@@ -147,15 +148,16 @@
 (defn best-basic-scorable-from-idx
   "Given a set of dice, finds the best basic scorable."
   [dice idx]
-  (println dice)
-  (println idx)
-  (let [single (vector (get dice idx))
-        trips (set (for [i (range (- idx 2) (+ idx 1))]
-                     (into [] (take 3 (drop i dice)))))
-        #_#_singles (map vector (filter #(or (= 1 %) (= 5 %)) dice))
-        #_#_trips (filter #(< 2 (count %)) (for [idx (range 6)]
-                                         (into [] (->> dice
-                                                       (drop idx)
-                                                       (take 3)))))]
-    (println "single" single)
-    (println "trips" trips)))
+  (let [single (conj #{} (vector (get dice idx)))
+        trips (set (filter #(< 2 (count %))
+                           (for [i (range (- idx 2) (+ idx 1))]
+                             (into [] (take 3 (drop i dice))))))
+        best-basic-scorable (first (filter #(contains? (set/union single trips) %) basic-scorables-ranked))]
+    (cond
+      (= [1 2 3 4 5 6] dice) dice
+
+      (three-pairs? dice) dice
+
+      best-basic-scorable best-basic-scorable
+
+      :else [])))
