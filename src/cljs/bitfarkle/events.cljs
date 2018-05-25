@@ -57,6 +57,15 @@
                      :on-success #(println "join game success")
                      :on-failure [:firebase-error]}}))
 
+(rf/reg-event-fx
+  :hold-dice
+  (fn [{:keys [db]} [_ dice-num]]
+    {:firebase/swap! {:path [(keyword (:game-code db))]
+                      :function #(game/hold-dice % dice-num)
+                      :on-success #(println "hold-dice success")
+                      :on-failure [:firebase-error]
+                      }}))
+
 (defn game-event! [event f & args]
   (let [enabled? (atom true)]
     (rf/reg-event-fx
@@ -72,12 +81,4 @@
 
 (game-event! :start-game game/initialize-game)
 (game-event! :roll-player-dice game/roll-dice)
-
-#_(rf/reg-event-fx
-  :hold-dice
-  (fn [{:keys [db]} [_ dice-num]]
-
-    (let [game (game/hold-dice (:game db) dice-num)]
-      (println "game" game))
-    {:db db}))
 

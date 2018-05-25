@@ -24,14 +24,6 @@
    [1]
    [5]])
 
-(defn single-dice-scoring
-  "Returns a score for a single dice."
-  [score dice]
-  (let [val-map {5 50
-                 1 100}
-        val (get val-map dice)]
-    (+ val score)))
-
 (defn three-pairs?
   "Returns true if the dice consist of three pairs; false otherwise."
   [dice]
@@ -39,12 +31,6 @@
     (and
       (= 3 (count potential-pairs))
       (every? #(= true %) (map (fn [[l r]] (= l r)) potential-pairs)))))
-
-(defn all-the-same?
-  "Returns true all the dice are the same; false otherwise."
-  [dice]
-  (let [val (first dice)]
-    (every? #(= val %) dice)))
 
 (defn double-scoring
   "Returns the score for four, five, or six of a kind using the doubling rules."
@@ -167,18 +153,17 @@
 
 (defn hold
   "Given a player, adds the held dice to the held score, resets the held dice, and adjusts the available dice."
-  [{:keys [to-hold available-dice] :as player}]
-  (if (not (scorable to-hold))
+  [{:keys [held available-dice] :as player}]
+  (if (not (scorable held))
     (assoc player :error "Dice must be scorable in order to hold!")
-    (let [score (calculate-score to-hold)
-          dice-left (if (= available-dice (count to-hold))
+    (let [score (calculate-score held)
+          dice-left (if (= available-dice (count held))
                       6
-                      (- available-dice (count to-hold)))]
+                      (- available-dice (count held)))]
       (-> player
           (update :held-score + score)
-          (assoc :to-hold []
+          (assoc :held []
                  :available-dice dice-left)))))
-
 
 (defn initialize-player
   "Returns a player in the initialized state."
@@ -186,7 +171,7 @@
   {:total-score 0
    :held-score 0
    :available-dice 6
-   :to-hold []
+   :held []
    :name (:name player)})
 
 (defn initialize-game
@@ -197,17 +182,32 @@
      :game-over? false
      :players initialized-players}))
 
-
-
-#_(defn add-to-hold
-  "Given a player and available dice index, adds the best basic scorable to the hold."
-  [{:keys [available-dice] :as player} idx]
-  (let [scorable (best-basic-scorable-from-idx available-dice idx)
-        held-score ()]
-    )
-  player)
+(defn remove-at-idx [v idx]
+  (vec (concat (subvec v 0 idx) (subvec v (inc idx)))))
 
 (defn hold-dice
   "Given a game, holds the specified dice for the current player."
-  [game dice-num]
+  [{:keys [current-player] :as game} dice-num]
+  (println "player" current-player)
+  (if-let [basic (seq (best-basic-scorable-from-idx (:rolled current-player) dice-num))]
+    (let [held (vec (sort (concat (:held current-player) basic)))
+          score (calculate-score held)
+          rolled (remove-at-idx (:rolled current-player) dice-num)
+          updated-player (-> current-player
+                             (assoc :held held
+                                    :held-score score
+                                    :rolled rolled
+                                    :available-dice (count rolled)))]
+      (println "basic" basic)
+      (println "held" held)
+      (println "score" score)
+      (println "rolled" rolled)
+      (println "player" updated-player)
+      game)
+    game))
+
+(defn end-turn
+  "Given a game, updates the players collection with the current player information and
+  moves the next player to current player."
+  [game]
   game)

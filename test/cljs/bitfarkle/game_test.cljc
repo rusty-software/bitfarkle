@@ -117,32 +117,32 @@
   (testing "Dice still available"
     (let [player {:held-score 100
                   :total-score 1000
-                  :to-hold [1]
+                  :held [1]
                   :available-dice 4}
           updated-player (game/hold player)]
       (is (= 200 (:held-score updated-player)))
       (is (= 1000 (:total-score updated-player)))
-      (is (= [] (:to-hold updated-player)))
+      (is (= [] (:held updated-player)))
       (is (= 3 (:available-dice updated-player)))))
   (testing "Holding all dice"
     (let [player {:held-score 100
                   :total-score 1000
-                  :to-hold [1]
+                  :held [1]
                   :available-dice 1}
           updated-player (game/hold player)]
       (is (= 200 (:held-score updated-player)))
       (is (= 1000 (:total-score updated-player)))
-      (is (= [] (:to-hold updated-player)))
+      (is (= [] (:held updated-player)))
       (is (= 6 (:available-dice updated-player)))))
   (testing "Illegal hold attempt"
     (let [player {:held-score 100
                   :total-score 1000
-                  :to-hold [6]
+                  :held [6]
                   :available-dice 3}
           updated-player (game/hold player)]
       (is (= 100 (:held-score updated-player)))
       (is (= 1000 (:total-score updated-player)))
-      (is (= [6] (:to-hold updated-player)))
+      (is (= [6] (:held updated-player)))
       (is (= 3 (:available-dice updated-player)))
       (is (= "Dice must be scorable in order to hold!" (:error updated-player))))))
 
@@ -151,12 +151,12 @@
     (is (zero? (:held-score player)))
     (is (zero? (:total-score player)))
     (is (= 6 (:available-dice player)))
-    (is (= [] (:to-hold player)))
+    (is (= [] (:held player)))
     (is (= "player1" (:name player)))))
 
 (defn player-initialized? [p]
-  (let [{:keys [total-score held-score available-dice to-hold]} p]
-    (and (= 0 total-score held-score (count to-hold))
+  (let [{:keys [total-score held-score available-dice held]} p]
+    (and (= 0 total-score held-score (count held))
          (= 6 available-dice))))
 
 (deftest test-initialize-game
@@ -196,8 +196,3 @@
     (is (= [] (game/best-basic-scorable-from-idx [2 2 3 3 4 5] 2)))
     (is (= [] (game/best-basic-scorable-from-idx [2 2 3 3 4 5] 3)))
     (is (= [] (game/best-basic-scorable-from-idx [2 2 3 3 4 5] 4)))))
-
-#_(deftest test-best-score
-  (is (= [1 1 1] (game/best-score [1 1 1 2 3 5])))
-  (is (= [1 1 1] (game/best-score [1 1 1 2 3 5])))
-  )
