@@ -202,6 +202,20 @@
       (assoc game :current-player updated-player))
     game))
 
+(defn unhold-dice
+  "Given a game, removes specified dice from hold for the current player."
+  [{:keys [current-player] :as game} dice-num]
+  (let [basic (best-basic-scorable-from-idx (:held current-player) dice-num)
+        held (remove-dice (:held current-player) basic)
+        score (calculate-score held)
+        rolled (vec (sort (concat (:rolled current-player) basic)))
+        updated-player (-> current-player
+                           (assoc :held held
+                                  :held-score score
+                                  :rolled rolled
+                                  :available-dice (count rolled)))]
+    (assoc game :current-player updated-player)))
+
 (defn end-turn
   "Given a game, updates the players collection with the current player information and
   moves the next player to current player."
