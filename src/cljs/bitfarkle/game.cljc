@@ -151,20 +151,6 @@
       (update :total-score + held-score)
       (assoc :held-score 0)))
 
-(defn hold
-  "Given a player, adds the held dice to the held score, resets the held dice, and adjusts the available dice."
-  [{:keys [held available-dice] :as player}]
-  (if (not (scorable held))
-    (assoc player :error "Dice must be scorable in order to hold!")
-    (let [score (calculate-score held)
-          dice-left (if (= available-dice (count held))
-                      6
-                      (- available-dice (count held)))]
-      (-> player
-          (update :held-score + score)
-          (assoc :held []
-                 :available-dice dice-left)))))
-
 (defn initialize-player
   "Returns a player in the initialized state."
   [player]
@@ -210,7 +196,9 @@
                              (assoc :held held
                                     :held-score score
                                     :rolled rolled
-                                    :available-dice (count rolled)))]
+                                    :available-dice (if (zero? (count rolled))
+                                                      6
+                                                      (count rolled))))]
       (assoc game :current-player updated-player))
     game))
 
