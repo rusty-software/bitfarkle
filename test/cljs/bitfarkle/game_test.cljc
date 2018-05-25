@@ -199,6 +199,18 @@
       (is (= [2 2 4 4 5 5] (get-in updated-game [:current-player :held])))
       (is (= 1500 (get-in updated-game [:current-player :held-score])))
       (is (= 6 (get-in updated-game [:current-player :available-dice])))
+      (is (= 1000 (get-in updated-game [:current-player :total-score])))))
+  (testing "Holding unscorable dice that would add to scorable hold"
+    (let [player {:rolled [4 4 5]
+                  :held [4 4 4]
+                  :held-score 400
+                  :available-dice 3
+                  :total-score 1000}
+          updated-game (game/hold-dice {:current-player player} 0)]
+      (is (= [4 5] (get-in updated-game [:current-player :rolled])))
+      (is (= [4 4 4 4] (get-in updated-game [:current-player :held])))
+      (is (= 800 (get-in updated-game [:current-player :held-score])))
+      (is (= 2 (get-in updated-game [:current-player :available-dice])))
       (is (= 1000 (get-in updated-game [:current-player :total-score]))))))
 
 (deftest test-unhold-dice
@@ -274,18 +286,18 @@
       (is (= 100 (get-in updated-game [:current-player :held-score])))
       (is (= 5 (get-in updated-game [:current-player :available-dice])))
       (is (= 1000 (get-in updated-game [:current-player :total-score])))))
-  (testing "Unhold 4k with no other scorables"
-    (let [player {:rolled [4 4]
-                  :held [2 2 2 2]
-                  :held-score 400
-                  :available-dice 2
-                  :total-score 1000}
-          updated-game (game/unhold-dice {:current-player player} 2)]
-      (is (= [2 4 4] (get-in updated-game [:current-player :rolled])))
-      (is (= [2 2 2] (get-in updated-game [:current-player :held])))
-      (is (= 200 (get-in updated-game [:current-player :held-score])))
-      (is (= 3 (get-in updated-game [:current-player :available-dice])))
-      (is (= 1000 (get-in updated-game [:current-player :total-score])))))
+  ;(testing "Unhold 4k with no other scorables"
+  ;  (let [player {:rolled [4 4]
+  ;                :held [2 2 2 2]
+  ;                :held-score 400
+  ;                :available-dice 2
+  ;                :total-score 1000}
+  ;        updated-game (game/unhold-dice {:current-player player} 2)]
+  ;    (is (= [2 4 4] (get-in updated-game [:current-player :rolled])))
+  ;    (is (= [2 2 2] (get-in updated-game [:current-player :held])))
+  ;    (is (= 200 (get-in updated-game [:current-player :held-score])))
+  ;    (is (= 3 (get-in updated-game [:current-player :available-dice])))
+  ;    (is (= 1000 (get-in updated-game [:current-player :total-score])))))
   ;(testing "Unhold 3k+3k"
   ;  (let [player {:rolled []
   ;                :held [1 1 1 3 3 3]

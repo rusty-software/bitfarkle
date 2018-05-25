@@ -188,19 +188,25 @@
 (defn hold-dice
   "Given a game, holds the specified dice for the current player."
   [{:keys [current-player] :as game} dice-num]
-  (if-let [basic (seq (best-basic-scorable-from-idx (:rolled current-player) dice-num))]
-    (let [held (vec (sort (concat (:held current-player) basic)))
-          score (calculate-score held)
-          rolled (remove-dice (:rolled current-player) basic)
-          updated-player (-> current-player
-                             (assoc :held held
-                                    :held-score score
-                                    :rolled rolled
-                                    :available-dice (if (zero? (count rolled))
-                                                      6
-                                                      (count rolled))))]
-      (assoc game :current-player updated-player))
-    game))
+  (let [basic (seq (best-basic-scorable-from-idx (:rolled current-player) dice-num))
+        single (vector (get (:rolled current-player) dice-num))
+        single-added (vec (sort (concat (:held current-player) single)))
+        scorable (if (and (nil? basic) (scorable single-added))
+                   single
+                   basic)]
+    (if scorable
+      (let [held (vec (sort (concat (:held current-player) scorable)))
+            score (calculate-score held)
+            rolled (remove-dice (:rolled current-player) scorable)
+            updated-player (-> current-player
+                               (assoc :held held
+                                      :held-score score
+                                      :rolled rolled
+                                      :available-dice (if (zero? (count rolled))
+                                                        6
+                                                        (count rolled))))]
+        (assoc game :current-player updated-player))
+      game)))
 
 (defn unhold-dice
   "Given a game, removes specified dice from hold for the current player."
