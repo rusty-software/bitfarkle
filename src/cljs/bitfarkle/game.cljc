@@ -115,16 +115,17 @@
 (defn has-at-least-trips?
   "Returns true if the dice at least have three of a kind; false otherwise."
   [dice]
-  (< 2 (apply max (vals (frequencies dice)))))
+  (if (< 2 (count dice))
+    (< 2 (apply max (vals (frequencies dice))))
+    false))
 
 (defn scorable
   "Returns truthy if a set of dice contains a scorable combination; false otherwise."
   [dice]
   (let [dice (sort dice)]
-    (or
-      (some #(or (= 1 %) (= 5 %)) dice)
-      (has-at-least-trips? dice)
-      (three-pairs? dice))))
+    (or (some #(or (= 1 %) (= 5 %)) dice)
+        (has-at-least-trips? dice)
+        (three-pairs? dice))))
 
 (defn roll
   "Given a number of dice to roll, returns a vector of randomly rolled dice."
@@ -175,7 +176,7 @@
   "Removes a collection of to-remove from a collection of dice.
 
   Note that while this can lead to partial removal, the game code shouldn't allow the
-  to-remove collection to not be a subset of dice."
+  to-remove collection to be anything other than a subset of dice."
   [dice to-remove]
   (reduce (fn [remaining d]
           (let [idx (.indexOf remaining d)]
@@ -185,17 +186,22 @@
           dice
           to-remove))
 
+(defn add-dice
+  "Adds a collection of to-add dice to a collection of dice."
+  [dice to-add]
+  (vec (sort (concat dice to-add))))
+
 (defn hold-dice
   "Given a game, holds the specified dice for the current player."
   [{:keys [current-player] :as game} dice-num]
   (let [basic (seq (best-basic-scorable-from-idx (:rolled current-player) dice-num))
         single (vector (get (:rolled current-player) dice-num))
-        single-added (vec (sort (concat (:held current-player) single)))
+        single-added (add-dice (:held current-player) single)
         scorable (if (and (nil? basic) (scorable single-added))
                    single
                    basic)]
     (if scorable
-      (let [held (vec (sort (concat (:held current-player) scorable)))
+      (let [held (add-dice (:held current-player) scorable)
             score (calculate-score held)
             rolled (remove-dice (:rolled current-player) scorable)
             updated-player (-> current-player
@@ -211,16 +217,25 @@
 (defn unhold-dice
   "Given a game, removes specified dice from hold for the current player."
   [{:keys [current-player] :as game} dice-num]
-  (let [basic (best-basic-scorable-from-idx (:held current-player) dice-num)
-        held (remove-dice (:held current-player) basic)
-        score (calculate-score held)
-        rolled (vec (sort (concat (:rolled current-player) basic)))
-        updated-player (-> current-player
-                           (assoc :held held
-                                  :held-score score
-                                  :rolled rolled
-                                  :available-dice (count rolled)))]
-    (assoc game :current-player updated-player)))
+  (let [{:keys [held rolled]} current-player
+        basic (vec (seq (best-basic-scorable-from-idx held dice-num)))
+        single (vector (get held dice-num))
+        basic-removed (remove-dice held basic)
+        removable (vec (if (or (zero? (count basic-removed))
+                               (scorable basic-removed))
+                         basic
+                         single))]
+    (if removable
+      (let [updated-held (remove-dice held removable)
+            score (calculate-score updated-held)
+            updated-rolled (add-dice rolled removable)
+            updated-player (-> current-player
+                               (assoc :held updated-held
+                                      :held-score score
+                                      :rolled updated-rolled
+                                      :available-dice (count updated-rolled)))]
+        (assoc game :current-player updated-player))
+      game)))
 
 (defn end-turn
   "Given a game, updates the players collection with the current player information and
