@@ -185,13 +185,27 @@
 (defn remove-at-idx [v idx]
   (vec (concat (subvec v 0 idx) (subvec v (inc idx)))))
 
+(defn remove-dice
+  "Removes a collection of to-remove from a collection of dice.
+
+  Note that while this can lead to partial removal, the game code shouldn't allow the
+  to-remove collection to not be a subset of dice."
+  [dice to-remove]
+  (reduce (fn [remaining d]
+          (let [idx (.indexOf remaining d)]
+            (if (<= 0 idx)
+              (remove-at-idx remaining idx)
+              remaining)))
+          dice
+          to-remove))
+
 (defn hold-dice
   "Given a game, holds the specified dice for the current player."
   [{:keys [current-player] :as game} dice-num]
   (if-let [basic (seq (best-basic-scorable-from-idx (:rolled current-player) dice-num))]
     (let [held (vec (sort (concat (:held current-player) basic)))
           score (calculate-score held)
-          rolled (remove-at-idx (:rolled current-player) dice-num)
+          rolled (remove-dice (:rolled current-player) basic)
           updated-player (-> current-player
                              (assoc :held held
                                     :held-score score

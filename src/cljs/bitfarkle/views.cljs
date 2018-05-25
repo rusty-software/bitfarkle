@@ -150,7 +150,8 @@
       {:class "row"}
       [:div
        {:class "col text-center"}
-       (if (not scorable)
+       (if (and (not (nil? rolled-dice))
+                (not scorable))
          [:h3
           {:class "bg-danger"}
           "FARKLED!!"]
