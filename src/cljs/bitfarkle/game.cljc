@@ -188,7 +188,6 @@
 (defn hold-dice
   "Given a game, holds the specified dice for the current player."
   [{:keys [current-player] :as game} dice-num]
-  (println "player" current-player)
   (if-let [basic (seq (best-basic-scorable-from-idx (:rolled current-player) dice-num))]
     (let [held (vec (sort (concat (:held current-player) basic)))
           score (calculate-score held)
@@ -198,12 +197,7 @@
                                     :held-score score
                                     :rolled rolled
                                     :available-dice (count rolled)))]
-      (println "basic" basic)
-      (println "held" held)
-      (println "score" score)
-      (println "rolled" rolled)
-      (println "player" updated-player)
-      game)
+      (assoc game :current-player updated-player))
     game))
 
 (defn end-turn

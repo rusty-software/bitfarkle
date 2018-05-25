@@ -66,6 +66,16 @@
                       :on-failure [:firebase-error]
                       }}))
 
+(rf/reg-event-fx
+  :release-dice
+  (fn [{:keys [db]} [_ dice-num]]
+    {:db db}
+    #_{:firebase/swap! {:path [(keyword (:game-code db))]
+                      :function #(game/release-dice % dice-num)
+                      :on-success #(println "release-dice success")
+                      :on-failure [:firebase-error]
+                      }}))
+
 (defn game-event! [event f & args]
   (let [enabled? (atom true)]
     (rf/reg-event-fx

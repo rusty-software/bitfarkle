@@ -56,7 +56,7 @@
         :id "gameCodeInput"
         :type "text"
         :name "game"
-        :placeholder "Enter Game Code"
+        :placeholder "Game Code"
         :required true}]]
      [:button
       {:class "btn btn-info"
@@ -94,70 +94,81 @@
   (let [players (listen :players)
         current-player (listen :current-player)
         rolled-dice (listen :rolled-dice)
+        held-dice (listen :held-dice)
+        held-score (listen :held-score)
         scorable (listen :scorable)]
     [:div
      [:div
       {:class "row"
        :id "play-area"}
       [:div
-       {:class "col-md-2"}
+       {:class "col-2"}
        [:strong "Current Player:"]]
       [:div
-       {:class "col-md-10"}
+       {:class "col-10"}
        (:name current-player)]]
      [:div
       {:class "row"}
       [:div
-       {:class "col-md-1"}
+       {:class "col-1"}
        [:button
         {:class "btn btn-success btn-block"
          :on-click #(rf/dispatch [:roll-player-dice])}
         "Roll"]]
       [:div
-       {:class "col-md-1"}
+       {:class "col-1"}
        [:button
         {:class "btn btn-danger btn-block"}
         "Score"]]]
      [:div
       {:class "row"}
+      [:div
+       {:class "col-1"}
+       "Rolled:"]
       (doall
         (for [[idx d] (map-indexed vector rolled-dice)]
           [:div
            {:key idx
-            :class (str "col-md-2 dice dice-" d)
+            :class (str "col-1 dice dice-" d)
             :on-click #(rf/dispatch [:hold-dice idx])}]))]
+     [:div
+      {:class "row"}
+      [:div
+       {:class "col-1"}
+       "Held:"
+       ]
+      (doall
+        (for [[idx d] (map-indexed vector held-dice)]
+          [:div
+           {:key idx
+            :class (str "col-1 dice dice-" d)
+            :on-click #(rf/dispatch [:release-dice idx])}]))]
      [:div
       {:class "row"}
       [:hr]]
      [:div
       {:class "row"}
       [:div
-       {:class "col-md-12 text-center"}
-       (cond
-         (nil? scorable)
-         ""
-
-         (not scorable)
+       {:class "col text-center"}
+       (if (not scorable)
          [:h3
           {:class "bg-danger"}
           "FARKLED!!"]
-
-         :else
-         "Scorable roll! Hold some dice!"
-         )]]
+         (str "Held total: " held-score))
+       ]]
      (doall
          (for [player players]
            [:div
             {:key (:name player)
              :class "row"}
             [:div
-             {:class "col-md-2"}
+             {:class "col-2"}
              (:name player)]
             [:div
-             {:class "col-md-1"}
-             "Score:"]
+             {:class "col-1"}
+             "Total Score:"]
             [:div
-             {:class "col-md-9"}
+             {:class "col-9"}
              (:total-score player)]
             ]))
      ]))
