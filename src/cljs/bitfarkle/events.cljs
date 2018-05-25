@@ -67,7 +67,7 @@
                       }}))
 
 (rf/reg-event-fx
-  :release-dice
+  :unhold-dice
   (fn [{:keys [db]} [_ dice-num]]
     {:db db}
     #_{:firebase/swap! {:path [(keyword (:game-code db))]

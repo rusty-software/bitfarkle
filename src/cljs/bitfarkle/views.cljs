@@ -142,7 +142,7 @@
           [:div
            {:key idx
             :class (str "col-1 dice dice-" d)
-            :on-click #(rf/dispatch [:release-dice idx])}]))]
+            :on-click #(rf/dispatch [:unhold-dice idx])}]))]
      [:div
       {:class "row"}
       [:hr]]
