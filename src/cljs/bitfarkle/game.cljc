@@ -143,7 +143,8 @@
         rolled (roll available-dice)
         updated-player (assoc player :rolled rolled
                                      :scorable (scorable rolled))]
-    (assoc game :current-player updated-player)))
+    (assoc game :current-player updated-player
+                :roll-disabled? true)))
 
 (defn score-player
   "Given a player, adds the player's held amount to their score."
@@ -167,7 +168,9 @@
   (let [initialized-players (vec (map initialize-player players))]
     {:current-player (get initialized-players 0)
      :game-over? false
-     :players initialized-players}))
+     :players initialized-players
+     :roll-disabled? false
+     :score-disabled? true}))
 
 (defn remove-at-idx [v idx]
   (vec (concat (subvec v 0 idx) (subvec v (inc idx)))))
@@ -211,7 +214,9 @@
                                       :available-dice (if (zero? (count rolled))
                                                         6
                                                         (count rolled))))]
-        (assoc game :current-player updated-player))
+        (assoc game :current-player updated-player
+                    :roll-disabled? false
+                    :score-disabled? false))
       game)))
 
 (defn unhold-dice

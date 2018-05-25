@@ -63,18 +63,15 @@
     {:firebase/swap! {:path [(keyword (:game-code db))]
                       :function #(game/hold-dice % dice-num)
                       :on-success #(println "hold-dice success")
-                      :on-failure [:firebase-error]
-                      }}))
+                      :on-failure [:firebase-error]}}))
 
 (rf/reg-event-fx
   :unhold-dice
   (fn [{:keys [db]} [_ dice-num]]
-    {:db db}
-    #_{:firebase/swap! {:path [(keyword (:game-code db))]
-                      :function #(game/release-dice % dice-num)
-                      :on-success #(println "release-dice success")
-                      :on-failure [:firebase-error]
-                      }}))
+    {:firebase/swap! {:path [(keyword (:game-code db))]
+                      :function #(game/unhold-dice % dice-num)
+                      :on-success #(println "unhold-dice success")
+                      :on-failure [:firebase-error]}}))
 
 (defn game-event! [event f & args]
   (let [enabled? (atom true)]

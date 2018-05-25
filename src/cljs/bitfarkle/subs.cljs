@@ -65,6 +65,20 @@
    (:current-player game)))
 
 (rf/reg-sub
+  :roll-disabled?
+  (fn [_ _]
+    (rf/subscribe [:game]))
+  (fn [game _]
+    (:roll-disabled? game)))
+
+(rf/reg-sub
+  :score-disabled?
+  (fn [_ _]
+    (rf/subscribe [:game]))
+  (fn [game _]
+    (:score-disabled? game)))
+
+(rf/reg-sub
   :rolled-dice
   (fn [_ _]
     (rf/subscribe [:game]))

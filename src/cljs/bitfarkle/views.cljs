@@ -96,7 +96,9 @@
         rolled-dice (listen :rolled-dice)
         held-dice (listen :held-dice)
         held-score (listen :held-score)
-        scorable (listen :scorable)]
+        scorable (listen :scorable)
+        roll-disabled? (listen :roll-disabled?)
+        score-disabled? (listen :score-disabled?)]
     [:div
      [:div
       {:class "row"
@@ -113,12 +115,15 @@
        {:class "col-1"}
        [:button
         {:class "btn btn-success btn-block"
-         :on-click #(rf/dispatch [:roll-player-dice])}
+         :on-click #(rf/dispatch [:roll-player-dice])
+         :disabled roll-disabled?}
         "Roll"]]
       [:div
        {:class "col-1"}
        [:button
-        {:class "btn btn-danger btn-block"}
+        {:class "btn btn-danger btn-block"
+         :on-click #(println "Score clicked")
+         :disabled score-disabled?}
         "Score"]]]
      [:div
       {:class "row"}
