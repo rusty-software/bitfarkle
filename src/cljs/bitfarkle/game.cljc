@@ -288,7 +288,7 @@
         next-idx (if (= (inc ending-player-idx) (count players))
                    0
                    (inc ending-player-idx))
-        next-player (get players next-idx)]
+        next-player (get updated-players next-idx)]
     (assoc game :current-player next-player
                 :players updated-players
                 :roll-disabled? false
