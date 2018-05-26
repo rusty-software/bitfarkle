@@ -355,3 +355,31 @@
       (is (= [] (:held updated-player)))
       (is (= 250 (:held-score updated-player)))
       (is (= [[1 5] [1]] (:roll-holds updated-player))))))
+
+(deftest test-farkle-player
+  (let [player {:rolled [4 6]
+                :held [1]
+                :held-score 350
+                :roll-holds [[1 5] [1]]
+                :available-dice 2
+                :total-score 1000}
+        updated-player (game/farkle-player player)]
+    (is (= [4 6] (:rolled updated-player)))
+    (is (zero? (:held-score updated-player)))
+    (is (zero? (:available-dice updated-player)))
+    (is (not (:scorable updated-player)))
+    (is (= 1000 (:total-score updated-player)))))
+
+(deftest test-roll-farkle
+  (with-redefs [game/roll (constantly [2 6])]
+    (let [player {:rolled [4 6]
+                  :held [1]
+                  :held-score 350
+                  :roll-holds [[1 5] [1]]
+                  :available-dice 2
+                  :total-score 1000}
+          updated-player (:current-player (game/roll-dice {:current-player player}))]
+      (is (= 2 (count (:rolled updated-player))))
+      (is (zero? (:held-score updated-player)))
+      (is (zero? (:available-dice updated-player)))
+      (is (= 1000 (:total-score updated-player))))))

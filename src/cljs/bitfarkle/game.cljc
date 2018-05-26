@@ -135,16 +135,26 @@
           (for [_ (range 1 (inc num-to-roll))]
             (inc (rand-int 6))))))
 
+(defn farkle-player
+  "Sets a player's attributes appropriately when farkled."
+  [player]
+  (assoc player :scorable false
+                :held-score 0
+                :available-dice 0))
+
 (defn roll-dice
   "Given a game, moves the current player's held dice to a history, clears the held dice,
   then rolls the available number of dice and updates the rolled value."
   [game]
   (let [{:keys [available-dice held roll-holds] :as player} (:current-player game)
         rolled (roll available-dice)
-        updated-player (assoc player :held []
-                                     :roll-holds (conj roll-holds held)
-                                     :rolled rolled
-                                     :scorable (scorable rolled))]
+        unfarkled (scorable rolled)
+        updated-player (if unfarkled
+                         (assoc player :held []
+                                       :roll-holds (conj roll-holds held)
+                                       :rolled rolled
+                                       :scorable unfarkled)
+                         (farkle-player player))]
     (assoc game :current-player updated-player
                 :roll-disabled? true)))
 
@@ -199,16 +209,19 @@
 (defn hold-dice
   "Given a game, holds the specified dice for the current player."
   [{:keys [current-player] :as game} dice-num]
-  (let [{:keys [rolled held held-score]} current-player
+  (let [{:keys [rolled held held-score roll-holds]} current-player
         basic (seq (best-basic-scorable-from-idx rolled dice-num))
         single (vector (get rolled dice-num))
         single-added (add-dice held single)
+        roll-holds-score (if (< 0 (count roll-holds))
+                                held-score
+                                0)
         scorable (if (and (nil? basic) (scorable single-added))
                    single
                    basic)]
     (if scorable
       (let [held (add-dice held scorable)
-            score (+ (calculate-score held) held-score)
+            score (+ (calculate-score held) roll-holds-score)
             rolled (remove-dice rolled scorable)
             updated-player (-> current-player
                                (assoc :held held
