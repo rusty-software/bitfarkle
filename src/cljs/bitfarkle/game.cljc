@@ -29,9 +29,11 @@
   [player]
   {:total-score 0
    :held-score 0
+   :total-held-score 0
    :available-dice 6
    :held []
    :roll-holds []
+   :roll-holds-score 0
    :name (:name player)})
 
 (defn initialize-game
@@ -166,12 +168,12 @@
   "Given a game, moves the current player's held dice to a history, clears the held dice,
   then rolls the available number of dice and updates the rolled value."
   [game]
-  (let [{:keys [available-dice held roll-holds] :as player} (:current-player game)
+  (let [{:keys [available-dice held roll-holds roll-holds-score] :as player} (:current-player game)
         rolled (roll available-dice)
         unfarkled (scorable rolled)
         updated-player (if unfarkled
                          (assoc player :held []
-                                       :roll-holds (conj roll-holds held)
+                                       :roll-holds (if (seq held) (conj roll-holds held) roll-holds)
                                        :rolled rolled
                                        :scorable unfarkled)
                          (farkle-player player))]
@@ -203,23 +205,22 @@
 (defn hold-dice
   "Given a game, holds the specified dice for the current player."
   [{:keys [current-player] :as game} dice-num]
-  (let [{:keys [rolled held held-score roll-holds]} current-player
+  (let [{:keys [rolled held roll-holds-score]} current-player
         basic (seq (best-basic-scorable-from-idx rolled dice-num))
         single (vector (get rolled dice-num))
         single-added (add-dice held single)
-        roll-holds-score (if (< 0 (count roll-holds))
-                                held-score
-                                0)
         scorable (if (and (nil? basic) (scorable single-added))
                    single
                    basic)]
     (if scorable
       (let [held (add-dice held scorable)
-            score (+ (calculate-score held) roll-holds-score)
+            held-score (calculate-score held)
+            total-held-score (+ held-score roll-holds-score)
             rolled (remove-dice rolled scorable)
             updated-player (-> current-player
                                (assoc :held held
-                                      :held-score score
+                                      :held-score held-score
+                                      :total-held-score total-held-score
                                       :rolled rolled
                                       :available-dice (if (zero? (count rolled))
                                                         6
