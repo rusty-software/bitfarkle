@@ -47,19 +47,13 @@
     (is (= 6 (count (:rolled updated-player))))
     (is (zero? (count (:held updated-player))))))
 
-(deftest test-score-player
-  (let [player {:held-score 1500
-                :total-score 3500}
-        updated-player (game/score-player player)]
-    (is (= 5000 (:total-score updated-player)))
-    (is (zero? (:held-score updated-player)))))
-
 (deftest test-initialize-player
   (let [player (game/initialize-player {:name "player1"})]
     (is (zero? (:held-score player)))
     (is (zero? (:total-score player)))
     (is (= 6 (:available-dice player)))
     (is (= [] (:held player)))
+    (is (= [] (:roll-holds player)))
     (is (= "player1" (:name player)))))
 
 (defn player-initialized? [p]
@@ -331,30 +325,31 @@
       (is (= 1000 (get-in updated-game [:current-player :total-score]))))))
 
 (deftest test-roll-again
-  (testing "first roll again"
-    (let [player {:rolled [2 3 3 4]
-                  :held [1 5]
-                  :held-score 150
-                  :roll-holds []
-                  :available-dice 4
-                  :total-score 1000}
-          updated-player (:current-player (game/roll-dice {:current-player player}))]
-      (is (= 4 (count (:rolled updated-player))))
-      (is (= [] (:held updated-player)))
-      (is (= 150 (:held-score updated-player)))
-      (is (= [[1 5]] (:roll-holds updated-player)))))
-  (testing "second roll again"
-    (let [player {:rolled [3 4 6]
-                  :held [1]
-                  :held-score 250
-                  :roll-holds [[1 5]]
-                  :available-dice 3
-                  :total-score 1000}
-          updated-player (:current-player (game/roll-dice {:current-player player}))]
-      (is (= 3 (count (:rolled updated-player))))
-      (is (= [] (:held updated-player)))
-      (is (= 250 (:held-score updated-player)))
-      (is (= [[1 5] [1]] (:roll-holds updated-player))))))
+  (with-redefs [game/scorable (constantly true)]
+    (testing "first roll again"
+      (let [player {:rolled [2 3 3 4]
+                    :held [1 5]
+                    :held-score 150
+                    :roll-holds []
+                    :available-dice 4
+                    :total-score 1000}
+            updated-player (:current-player (game/roll-dice {:current-player player}))]
+        (is (= 4 (count (:rolled updated-player))))
+        (is (= [] (:held updated-player)))
+        (is (= 150 (:held-score updated-player)))
+        (is (= [[1 5]] (:roll-holds updated-player)))))
+    (testing "second roll again"
+      (let [player {:rolled [3 4 6]
+                    :held [1]
+                    :held-score 250
+                    :roll-holds [[1 5]]
+                    :available-dice 3
+                    :total-score 1000}
+            updated-player (:current-player (game/roll-dice {:current-player player}))]
+        (is (= 3 (count (:rolled updated-player))))
+        (is (= [] (:held updated-player)))
+        (is (= 250 (:held-score updated-player)))
+        (is (= [[1 5] [1]] (:roll-holds updated-player)))))))
 
 (deftest test-farkle-player
   (let [player {:rolled [4 6]
@@ -383,3 +378,79 @@
       (is (zero? (:held-score updated-player)))
       (is (zero? (:available-dice updated-player)))
       (is (= 1000 (:total-score updated-player))))))
+
+(deftest test-score-player
+  (let [player {:held-score 1500
+                :total-score 3500}
+        updated-player (game/score-player player)]
+    (is (= 5000 (:total-score updated-player)))))
+
+(defn is-turn-initialized?
+  [{:keys [rolled held held-score roll-holds available-dice]}]
+  (and
+    (is (= [] rolled) "rolled should be empty")
+    (is (= [] held) "held should be empty")
+    (is (= [] roll-holds) "roll-holds should be empty")
+    (is (zero? held-score) "held-score should be 0")
+    (is (= 6 available-dice) "available-dice should be 6")))
+
+(deftest test-initialize-turn
+  (let [player {:name "player1"
+                :rolled [4 6]
+                :held [1]
+                :held-score 350
+                :roll-holds [[1 5] [1]]
+                :available-dice 2
+                :total-score 1000}
+         updated-player (game/initialize-turn player)]
+    (is-turn-initialized? updated-player)))
+
+(deftest test-update-players
+  (let [player1 {:name "player1"
+                 :rolled [4 6]
+                 :held [1]
+                 :held-score 350
+                 :roll-holds [[1 5] [1]]
+                 :available-dice 2
+                 :total-score 1000}
+        player2 {:name "player2"
+                 :rolled []
+                 :held []
+                 :held-score 0
+                 :roll-holds []
+                 :available-dice 6
+                 :total-score 2000}
+        updated1 {:name "player1"
+                  :rolled []
+                  :held []
+                  :held-score 0
+                  :roll-holds []
+                  :available-dice 6
+                  :total-score 1350}
+        updated-players (game/update-players [player1 player2] updated1)]
+    (is (= updated1 (get updated-players 0)))
+    (is (= player2 (get updated-players 1)))))
+
+#_(deftest test-end-turn
+  (let [player1 {:name "player1"
+                 :rolled [4 6]
+                 :held [1]
+                 :held-score 350
+                 :roll-holds [[1 5] [1]]
+                 :available-dice 2
+                 :total-score 1000}
+        player2 {:name "player2"
+                 :rolled []
+                 :held []
+                 :held-score 0
+                 :roll-holds []
+                 :available-dice 6
+                 :total-score 2000}
+        game {:current-player player1
+              :players [player1 player2]}
+        updated-game (game/end-turn game)]
+    (is (= player2 (:current-player updated-game)))
+    (is (= "player1" (get-in updated-game [:players 0 :name])))
+    (is-turn-initialized? (get-in updated-game [:players 0]))
+    (is (= 1350 (get-in updated-game [:players 0 :total-score])))
+    ))

@@ -24,6 +24,26 @@
    [1]
    [5]])
 
+(defn initialize-player
+  "Returns a player in the initialized state."
+  [player]
+  {:total-score 0
+   :held-score 0
+   :available-dice 6
+   :held []
+   :roll-holds []
+   :name (:name player)})
+
+(defn initialize-game
+  "Given a game state, initializes a new game."
+  [{:keys [players]}]
+  (let [initialized-players (vec (map initialize-player players))]
+    {:current-player (get initialized-players 0)
+     :game-over? false
+     :players initialized-players
+     :roll-disabled? false
+     :score-disabled? true}))
+
 (defn three-pairs?
   "Returns true if the dice consist of three pairs; false otherwise."
   [dice]
@@ -158,32 +178,6 @@
     (assoc game :current-player updated-player
                 :roll-disabled? true)))
 
-(defn score-player
-  "Given a player, adds the player's held amount to their score."
-  [{:keys [held-score] :as player}]
-  (-> player
-      (update :total-score + held-score)
-      (assoc :held-score 0)))
-
-(defn initialize-player
-  "Returns a player in the initialized state."
-  [player]
-  {:total-score 0
-   :held-score 0
-   :available-dice 6
-   :held []
-   :name (:name player)})
-
-(defn initialize-game
-  "Given a game state, initializes a new game."
-  [{:keys [players]}]
-  (let [initialized-players (vec (map initialize-player players))]
-    {:current-player (get initialized-players 0)
-     :game-over? false
-     :players initialized-players
-     :roll-disabled? false
-     :score-disabled? true}))
-
 (defn remove-at-idx [v idx]
   (vec (concat (subvec v 0 idx) (subvec v (inc idx)))))
 
@@ -260,8 +254,35 @@
                     :score-disabled? (zero? (count updated-held))))
       game)))
 
+(defn score-player
+  "Given a player, adds the player's held amount to their score."
+  [{:keys [held-score] :as player}]
+  (update player :total-score + held-score))
+
+(defn initialize-turn
+  "Given a player, sets the player attributes appropriately for beginning a turn."
+  [player]
+  (-> player
+      (assoc :rolled []
+             :held []
+             :held-score 0
+             :roll-holds []
+             :available-dice 6)))
+
+(defn update-players
+  "Given a collection of players and a player, replaces the player in the collection by name."
+  [players player]
+  players)
+
 (defn end-turn
-  "Given a game, updates the players collection with the current player information and
-  moves the next player to current player."
-  [game]
-  game)
+  "Given a game, updates the players collection with the current player information, sets
+   the current player data to a turn-initial state, and moves the next player to current player."
+  [{:keys [current-player players] :as game}]
+  (let [ending-player (-> current-player
+                          (score-player)
+                          (initialize-turn))
+        next-player nil
+        updated-players (update-players players ending-player)]
+    (assoc game :current-player next-player
+                :players updated-players))
+  )
