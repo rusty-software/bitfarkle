@@ -161,14 +161,18 @@
   "Sets a player's attributes appropriately when farkled."
   [player]
   (assoc player :scorable false
+                :held []
                 :held-score 0
-                :available-dice 0))
+                :total-held-score 0
+                :roll-holds []
+                :roll-holds-score 0
+                :available-dice 6))
 
 (defn roll-dice
   "Given a game, moves the current player's held dice to a history, clears the held dice,
   then rolls the available number of dice and updates the rolled value."
   [game]
-  (let [{:keys [available-dice held held-score roll-holds roll-holds-score total-held-score] :as player} (:current-player game)
+  (let [{:keys [available-dice held held-score roll-holds roll-holds-score] :as player} (:current-player game)
         rolled (roll available-dice)
         unfarkled (scorable rolled)
         updated-player (if unfarkled
@@ -178,9 +182,10 @@
                                        :roll-holds-score (+ roll-holds-score held-score)
                                        :rolled rolled
                                        :scorable unfarkled)
-                         (farkle-player player))]
+                         (assoc (farkle-player player) :rolled rolled))]
     (assoc game :current-player updated-player
-                :roll-disabled? true)))
+                :roll-disabled? true
+                :score-disabled? unfarkled)))
 
 (defn remove-at-idx [v idx]
   (vec (concat (subvec v 0 idx) (subvec v (inc idx)))))

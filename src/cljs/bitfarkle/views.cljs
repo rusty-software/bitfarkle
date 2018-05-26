@@ -104,6 +104,15 @@
         score-disabled? (listen :score-disabled?)]
     [:div
      [:div
+      {:class "row"}
+      (when (and (not (nil? rolled))
+                 (not scorable))
+        [:div
+         {:class "col text-center"}
+         [:h3
+          {:class "bg-danger"}
+          "FARKLED!!"]])]
+     [:div
       {:class "row"
        :id "play-area"}
       [:div
@@ -176,28 +185,17 @@
                {:key (str h-idx "-" d-idx)
                 :class (str "tinydice dice-" d)}])
             [:div
-             {:class "bg-dark"
+             {:key (str "separator-" h-idx)
+              :class "bg-dark"
               :style {:width "3px"
-                      :height "50px"}}])
-
-          ))
-      ]
+                      :height "50px"}}])))]
      [:div
       {:class "row"}
       [:hr]]
      [:div
       {:class "row"}
       [:h4 "Players"]]
-     [:div
-      {:class "row"}
-      [:div
-       {:class "col text-center"}
-       (when (and (not (nil? rolled))
-                  (not scorable))
-         [:h3
-          {:class "bg-danger"}
-          "FARKLED!!"])
-       ]]
+
      [:div
       {:class "row"}]
      (doall

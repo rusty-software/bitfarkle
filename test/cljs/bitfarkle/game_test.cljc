@@ -408,14 +408,20 @@
 (deftest test-farkle-player
   (let [player {:rolled [4 6]
                 :held [1]
-                :held-score 350
+                :held-score 100
+                :total-held-score 350
                 :roll-holds [[1 5] [1]]
+                :roll-holds-score 250
                 :available-dice 2
                 :total-score 1000}
         updated-player (game/farkle-player player)]
     (is (= [4 6] (:rolled updated-player)))
+    (is (= [] (:held updated-player)))
     (is (zero? (:held-score updated-player)))
-    (is (zero? (:available-dice updated-player)))
+    (is (zero? (:total-held-score updated-player)))
+    (is (= [] (:roll-holds updated-player)))
+    (is (zero? (:roll-holds-score updated-player)))
+    (is (= 6 (:available-dice updated-player)))
     (is (not (:scorable updated-player)))
     (is (= 1000 (:total-score updated-player)))))
 
@@ -423,14 +429,16 @@
   (with-redefs [game/roll (constantly [2 6])]
     (let [player {:rolled [4 6]
                   :held [1]
-                  :held-score 350
+                  :held-score 100
+                  :total-held-score 350
                   :roll-holds [[1 5] [1]]
                   :available-dice 2
                   :total-score 1000}
           updated-player (:current-player (game/roll-dice {:current-player player}))]
       (is (= 2 (count (:rolled updated-player))))
-      (is (zero? (:held-score updated-player)))
-      (is (zero? (:available-dice updated-player)))
+      (is (zero? (:total-held-score updated-player)))
+      (is (= [] (:roll-holds updated-player)))
+      (is (= 6 (:available-dice updated-player)))
       (is (= 1000 (:total-score updated-player))))))
 
 (deftest test-score-player
