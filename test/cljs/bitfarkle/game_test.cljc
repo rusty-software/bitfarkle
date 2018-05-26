@@ -348,7 +348,7 @@
                     :held-score 150
                     :roll-holds []
                     :roll-holds-score 0
-                    :total-held-score 0
+                    :total-held-score 150
                     :available-dice 4
                     :total-score 1000}
             updated-player (:current-player (game/roll-dice {:current-player player}))]
@@ -364,7 +364,7 @@
                     :held-score 100
                     :roll-holds [[1 5]]
                     :roll-holds-score 150
-                    :total-held-score 150
+                    :total-held-score 250
                     :available-dice 3
                     :total-score 1000}
             updated-player (:current-player (game/roll-dice {:current-player player}))]

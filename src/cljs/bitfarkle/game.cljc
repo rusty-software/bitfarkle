@@ -176,7 +176,6 @@
                                        :held-score 0
                                        :roll-holds (if (seq held) (conj roll-holds held) roll-holds)
                                        :roll-holds-score (+ roll-holds-score held-score)
-                                       :total-held-score (+ total-held-score held-score)
                                        :rolled rolled
                                        :scorable unfarkled)
                          (farkle-player player))]
