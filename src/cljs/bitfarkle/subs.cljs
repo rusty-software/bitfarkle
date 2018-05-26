@@ -77,31 +77,3 @@
     (rf/subscribe [:game]))
   (fn [game _]
     (:score-disabled? game)))
-
-(rf/reg-sub
-  :rolled-dice
-  (fn [_ _]
-    (rf/subscribe [:game]))
-  (fn [game _]
-    (get-in game [:current-player :rolled])))
-
-(rf/reg-sub
-  :held-dice
-  (fn [_ _]
-    (rf/subscribe [:game]))
-  (fn [game _]
-    (get-in game [:current-player :held])))
-
-(rf/reg-sub
-  :held-score
-  (fn [_ _]
-    (rf/subscribe [:game]))
-  (fn [game _]
-    (get-in game [:current-player :held-score])))
-
-(rf/reg-sub
-  :scorable
-  (fn [_ _]
-    (rf/subscribe [:game]))
-  (fn [game _]
-    (get-in game [:current-player :scorable])))
