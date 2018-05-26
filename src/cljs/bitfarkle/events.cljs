@@ -87,5 +87,6 @@
          {})))))
 
 (game-event! :start-game game/initialize-game)
-(game-event! :roll-player-dice game/roll-dice)
+(game-event! :roll-dice game/roll-dice)
+(game-event! :score-player game/end-turn)
 

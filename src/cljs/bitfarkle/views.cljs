@@ -125,14 +125,14 @@
        {:class "col-1"}
        [:button
         {:class "btn btn-success btn-block"
-         :on-click #(rf/dispatch [:roll-player-dice])
+         :on-click #(rf/dispatch [:roll-dice])
          :disabled roll-disabled?}
         "Roll"]]
       [:div
        {:class "col-1"}
        [:button
         {:class "btn btn-danger btn-block"
-         :on-click #(println "Score clicked")
+         :on-click #(rf/dispatch [:end-turn])
          :disabled score-disabled?}
         "Score"]]]
      [:div
