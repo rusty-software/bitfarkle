@@ -5,6 +5,15 @@
   background-repeat: no-repeat;
 }
 
+.tinydice {
+  width: 50px;
+  height: 50px;
+  margin: 2px;
+  background-size: 50% 50%;
+  background-repeat: no-repeat;
+  background-position: center;
+  }
+
 .dice.dice-1 {
   background-image: url(../img/dice-1.png);
 }
@@ -21,5 +30,24 @@
   background-image: url(../img/dice-5.png);
 }
 .dice.dice-6 {
+  background-image: url(../img/dice-6.png);
+}
+
+.tinydice.dice-1 {
+  background-image: url(../img/dice-1.png);
+}
+.tinydice.dice-2 {
+  background-image: url(../img/dice-2.png);
+}
+.tinydice.dice-3 {
+  background-image: url(../img/dice-3.png);
+}
+.tinydice.dice-4 {
+  background-image: url(../img/dice-4.png);
+}
+.tinydice.dice-5 {
+  background-image: url(../img/dice-5.png);
+}
+.tinydice.dice-6 {
   background-image: url(../img/dice-6.png);
 }

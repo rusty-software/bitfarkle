@@ -99,7 +99,7 @@
 (defn active-game []
   (let [players (listen :players)
         current-player (listen :current-player)
-        {:keys [rolled held total-held-score scorable]} current-player
+        {:keys [rolled held roll-holds total-held-score scorable]} current-player
         roll-disabled? (listen :roll-disabled?)
         score-disabled? (listen :score-disabled?)]
     [:div
@@ -155,14 +155,33 @@
        :style {:height "100px"}}
       [:div
        {:class "col-1"}
-       "Held:"
-       ]
+       "Held:"]
       (doall
         (for [[idx d] (map-indexed vector held)]
           [:div
            {:key idx
             :class (str "col-1 dice dice-" d)
             :on-click #(rf/dispatch [:unhold-dice idx])}]))]
+     [:div
+      {:class "row"
+       :style {:height "100px"}}
+      [:div
+       {:class "col-1"}
+       "Bucket:"]
+      (doall
+        (for [[h-idx holding] (map-indexed vector roll-holds)]
+          (conj
+            (for [[d-idx d] (map-indexed vector holding)]
+              [:div
+               {:key (str h-idx "-" d-idx)
+                :class (str "tinydice dice-" d)}])
+            [:div
+             {:class "bg-dark"
+              :style {:width "3px"
+                      :height "50px"}}])
+
+          ))
+      ]
      [:div
       {:class "row"}
       [:hr]]
