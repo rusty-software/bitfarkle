@@ -213,10 +213,15 @@
   "Given a game, holds the specified dice for the current player."
   [{:keys [current-player] :as game} dice-num]
   (let [{:keys [rolled held roll-holds-score]} current-player
+        held-frequencies (frequencies held)
         basic (seq (best-basic-scorable-from-idx rolled dice-num))
-        single (vector (get rolled dice-num))
-        single-added (add-dice held single)
-        scorable (if (and (nil? basic) (scorable single-added))
+        rank (get rolled dice-num)
+        single (vector rank)
+        single-addable (and (seq held-frequencies)
+                            (or (= [1] single)
+                                (= [5] single)
+                                (< 2 (get held-frequencies rank 0))))
+        scorable (if (and (nil? basic) single-addable)
                    single
                    basic)]
     (if scorable
@@ -240,7 +245,37 @@
 (defn unhold-dice
   "Given a game, removes specified dice from hold for the current player."
   [{:keys [current-player] :as game} dice-num]
-  (let [{:keys [held rolled]} current-player
+  (let [{:keys [held rolled total-held-score]} current-player
+        dice-rank (get held dice-num)
+        rank-frequencies (frequencies held)
+        removable (cond
+                    (or (= [1 2 3 4 5 6] held)
+                        (three-pairs? held))
+                    held
+
+                    (or (= 1 dice-rank) (= 5 dice-rank))
+                    (vector dice-rank)
+
+                    (< 3 (get rank-frequencies dice-rank))
+                    (vector dice-rank)
+
+                    :else
+                    (best-basic-scorable-from-idx held dice-num))]
+    (let [original-held-score (calculate-score held)
+          updated-held (remove-dice held removable)
+          updated-held-score (calculate-score updated-held)
+          updated-rolled (add-dice rolled removable)
+          updated-player (-> current-player
+                             (assoc :held updated-held
+                                    :held-score updated-held-score
+                                    :total-held-score (+ updated-held-score (- total-held-score original-held-score))
+                                    :rolled updated-rolled
+                                    :available-dice (count updated-rolled)))]
+      (assoc game :current-player updated-player
+                  :roll-disabled? (zero? (count updated-held))
+                  :score-disabled? (zero? (count updated-held)))))
+  #_(let [{:keys [held rolled total-held-score]} current-player
+        dice-rank (get held dice-num)
         basic (vec (seq (best-basic-scorable-from-idx held dice-num)))
         single (vector (get held dice-num))
         basic-removed (remove-dice held basic)
@@ -249,12 +284,14 @@
                          basic
                          single))]
     (if removable
-      (let [updated-held (remove-dice held removable)
-            score (calculate-score updated-held)
+      (let [original-held-score (calculate-score held)
+            updated-held (remove-dice held removable)
+            updated-held-score (calculate-score updated-held)
             updated-rolled (add-dice rolled removable)
             updated-player (-> current-player
                                (assoc :held updated-held
-                                      :held-score score
+                                      :held-score updated-held-score
+                                      :total-held-score (+ updated-held-score (- total-held-score original-held-score))
                                       :rolled updated-rolled
                                       :available-dice (count updated-rolled)))]
         (assoc game :current-player updated-player
