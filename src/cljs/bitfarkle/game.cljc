@@ -239,7 +239,9 @@
                                       :held-score score
                                       :rolled updated-rolled
                                       :available-dice (count updated-rolled)))]
-        (assoc game :current-player updated-player))
+        (assoc game :current-player updated-player
+                    :roll-disabled? (zero? (count updated-held))
+                    :score-disabled? (zero? (count updated-held))))
       game)))
 
 (defn end-turn
