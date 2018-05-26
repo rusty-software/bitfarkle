@@ -136,12 +136,14 @@
             (inc (rand-int 6))))))
 
 (defn roll-dice
-  "Given a game, rolls the current player's available number of dice and updates the rolled value."
+  "Given a game, moves the current player's held dice to a history, clears the held dice,
+  then rolls the available number of dice and updates the rolled value."
   [game]
-  (let [player (:current-player game)
-        available-dice (:available-dice player)
+  (let [{:keys [available-dice held roll-holds] :as player} (:current-player game)
         rolled (roll available-dice)
-        updated-player (assoc player :rolled rolled
+        updated-player (assoc player :held []
+                                     :roll-holds (conj roll-holds held)
+                                     :rolled rolled
                                      :scorable (scorable rolled))]
     (assoc game :current-player updated-player
                 :roll-disabled? true)))
@@ -197,16 +199,17 @@
 (defn hold-dice
   "Given a game, holds the specified dice for the current player."
   [{:keys [current-player] :as game} dice-num]
-  (let [basic (seq (best-basic-scorable-from-idx (:rolled current-player) dice-num))
-        single (vector (get (:rolled current-player) dice-num))
-        single-added (add-dice (:held current-player) single)
+  (let [{:keys [rolled held held-score]} current-player
+        basic (seq (best-basic-scorable-from-idx rolled dice-num))
+        single (vector (get rolled dice-num))
+        single-added (add-dice held single)
         scorable (if (and (nil? basic) (scorable single-added))
                    single
                    basic)]
     (if scorable
-      (let [held (add-dice (:held current-player) scorable)
-            score (calculate-score held)
-            rolled (remove-dice (:rolled current-player) scorable)
+      (let [held (add-dice held scorable)
+            score (+ (calculate-score held) held-score)
+            rolled (remove-dice rolled scorable)
             updated-player (-> current-player
                                (assoc :held held
                                       :held-score score

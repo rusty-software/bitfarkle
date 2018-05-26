@@ -329,3 +329,29 @@
       (is (= 300 (get-in updated-game [:current-player :held-score])))
       (is (= 3 (get-in updated-game [:current-player :available-dice])))
       (is (= 1000 (get-in updated-game [:current-player :total-score]))))))
+
+(deftest test-roll-again
+  (testing "first roll again"
+    (let [player {:rolled [2 3 3 4]
+                  :held [1 5]
+                  :held-score 150
+                  :roll-holds []
+                  :available-dice 4
+                  :total-score 1000}
+          updated-player (:current-player (game/roll-dice {:current-player player}))]
+      (is (= 4 (count (:rolled updated-player))))
+      (is (= [] (:held updated-player)))
+      (is (= 150 (:held-score updated-player)))
+      (is (= [[1 5]] (:roll-holds updated-player)))))
+  (testing "second roll again"
+    (let [player {:rolled [3 4 6]
+                  :held [1]
+                  :held-score 250
+                  :roll-holds [[1 5]]
+                  :available-dice 3
+                  :total-score 1000}
+          updated-player (:current-player (game/roll-dice {:current-player player}))]
+      (is (= 3 (count (:rolled updated-player))))
+      (is (= [] (:held updated-player)))
+      (is (= 250 (:held-score updated-player)))
+      (is (= [[1 5] [1]] (:roll-holds updated-player))))))
