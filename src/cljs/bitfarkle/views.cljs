@@ -42,30 +42,36 @@
 
 (defn no-game []
   [:div
-   [:form
-    {:on-submit (fn [e]
-                  (.preventDefault e)
-                  (println (.. e -target -elements -game -value))
-                  (rf/dispatch [:join-game (str/upper-case (.. e -target -elements -game -value))]))}
+   {:class "text-center"}
+   [:div
+    {:class "row"}
     [:div
-     {:class "form-group row"}
-     [:div
-      {:class "col-sm-2"}
-      [:input
-       {:class "text-uppercase form-control"
-        :id "gameCodeInput"
-        :type "text"
-        :name "game"
-        :placeholder "Game Code"
-        :required true}]]
+     {:class "col"}
+     [:form
+      {:class "form-inline"
+       :style {:display "inline-block"}
+       :on-submit (fn [e]
+                    (.preventDefault e)
+                    (println (.. e -target -elements -game -value))
+                    (rf/dispatch [:join-game (str/upper-case (.. e -target -elements -game -value))]))}
+      [:div
+       {:class "form-group"}
+       [:input
+        {:class "text-uppercase form-control mx-1"
+         :id "gameCodeInput"
+         :type "text"
+         :name "game"
+         :placeholder "Game Code"
+         :required true}]
+       [:button
+        {:class "btn btn-info"
+         :type "submit"}
+        "Join Game"]]]]
+    [:div
+     {:class "col"}
      [:button
-      {:class "btn btn-info"
-       :type "submit"}
-      "Join Game"]]]
-   [:br]
-   [:button
-    {:class "btn btn-danger"
-     :on-click #(rf/dispatch [:create-game])} "Create new game"]])
+      {:class "btn btn-danger"
+       :on-click #(rf/dispatch [:create-game])} "Create new game"]]]])
 
 (defn pending-game []
   (let [players (listen :players)]
