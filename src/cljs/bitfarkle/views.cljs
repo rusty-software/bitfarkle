@@ -114,6 +114,8 @@
      [:div
       {:class "row"}
       [:div
+       {:class "col-1"}]
+      [:div
        {:class "col-1"}
        [:button
         {:class "btn btn-success btn-block"
@@ -127,6 +129,9 @@
          :on-click #(println "Score clicked")
          :disabled score-disabled?}
         "Score"]]]
+     [:div
+      {:class "row"
+       :style {:height "5px"}}]
      [:div
       {:class "row"
        :style {:height "100px"}}
@@ -155,6 +160,9 @@
      [:div
       {:class "row"}
       [:hr]]
+     [:div
+      {:class "row"}
+      [:h4 "Players"]]
      [:div
       {:class "row"}
       [:div

@@ -1,7 +1,8 @@
 .dice {
   width: 95px;
   height: 95px;
-  background-size: 100% 100%;
+  background-size: 95% 95%;
+  background-repeat: no-repeat;
 }
 
 .dice.dice-1 {
