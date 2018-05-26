@@ -269,10 +269,12 @@
              :roll-holds []
              :available-dice 6)))
 
-(defn update-players
-  "Given a collection of players and a player, replaces the player in the collection by name."
-  [players player]
-  players)
+(defn idx-by-name
+  "Returns the first index of the item in the vector that matches the name attribute."
+  [players name]
+  (first (keep-indexed (fn [idx player]
+                         (when (= name (:name player))
+                           idx)) players)))
 
 (defn end-turn
   "Given a game, updates the players collection with the current player information, sets
@@ -281,8 +283,13 @@
   (let [ending-player (-> current-player
                           (score-player)
                           (initialize-turn))
-        next-player nil
-        updated-players (update-players players ending-player)]
+        ending-player-idx (idx-by-name players (:name ending-player))
+        updated-players (assoc players ending-player-idx ending-player)
+        next-idx (if (= (inc ending-player-idx) (count players))
+                   0
+                   (inc ending-player-idx))
+        next-player (get players next-idx)]
     (assoc game :current-player next-player
-                :players updated-players))
-  )
+                :players updated-players
+                :roll-disabled? false
+                :score-disabled? true)))

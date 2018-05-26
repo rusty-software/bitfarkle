@@ -349,7 +349,29 @@
         (is (= 3 (count (:rolled updated-player))))
         (is (= [] (:held updated-player)))
         (is (= 250 (:held-score updated-player)))
-        (is (= [[1 5] [1]] (:roll-holds updated-player)))))))
+        (is (= [[1 5] [1]] (:roll-holds updated-player)))))
+    (testing "hold, roll, hold"
+      (let [player {:rolled [1 1 3 4 5 6]
+                    :held []
+                    :held-score 1500
+                    :roll-holds [[1 2 3 4 5 6]]
+                    :available-dice 6
+                    :total-score 1000}
+            updated-player (:current-player (game/hold-dice {:current-player player} 0))]
+        (is (= [1] (:held updated-player)))
+        (is (= 1600 (:held-score updated-player)))
+        (is (= [[1 2 3 4 5 6]] (:roll-holds updated-player)))))
+    (testing "hold, roll, hold, hold"
+      (let [player {:rolled [1 3 4 5 6]
+                    :held [1]
+                    :held-score 1600
+                    :roll-holds [[1 2 3 4 5 6]]
+                    :available-dice 5
+                    :total-score 1000}
+            updated-player (:current-player (game/hold-dice {:current-player player} 0))]
+        (is (= [1 1] (:held updated-player)))
+        (is (= 1700 (:held-score updated-player)))
+        (is (= [[1 2 3 4 5 6]] (:roll-holds updated-player)))))))
 
 (deftest test-farkle-player
   (let [player {:rolled [4 6]
@@ -405,52 +427,33 @@
          updated-player (game/initialize-turn player)]
     (is-turn-initialized? updated-player)))
 
-(deftest test-update-players
-  (let [player1 {:name "player1"
-                 :rolled [4 6]
-                 :held [1]
-                 :held-score 350
-                 :roll-holds [[1 5] [1]]
-                 :available-dice 2
-                 :total-score 1000}
-        player2 {:name "player2"
-                 :rolled []
-                 :held []
-                 :held-score 0
-                 :roll-holds []
-                 :available-dice 6
-                 :total-score 2000}
-        updated1 {:name "player1"
-                  :rolled []
-                  :held []
-                  :held-score 0
-                  :roll-holds []
-                  :available-dice 6
-                  :total-score 1350}
-        updated-players (game/update-players [player1 player2] updated1)]
-    (is (= updated1 (get updated-players 0)))
-    (is (= player2 (get updated-players 1)))))
+(deftest test-idx-by-name
+  (let [players [{:name "player1"}
+                 {:name "player2"}
+                 {:name "player3"}]]
+    (is (= 1 (game/idx-by-name players "player2")))))
 
-#_(deftest test-end-turn
+(deftest test-end-turn
   (let [player1 {:name "player1"
-                 :rolled [4 6]
-                 :held [1]
-                 :held-score 350
-                 :roll-holds [[1 5] [1]]
-                 :available-dice 2
-                 :total-score 1000}
-        player2 {:name "player2"
                  :rolled []
                  :held []
                  :held-score 0
                  :roll-holds []
                  :available-dice 6
                  :total-score 2000}
-        game {:current-player player1
+        player2 {:name "player2"
+                 :rolled [4 6]
+                 :held [1]
+                 :held-score 350
+                 :roll-holds [[1 5] [1]]
+                 :available-dice 2
+                 :total-score 1000}
+        game {:current-player player2
               :players [player1 player2]}
         updated-game (game/end-turn game)]
-    (is (= player2 (:current-player updated-game)))
-    (is (= "player1" (get-in updated-game [:players 0 :name])))
-    (is-turn-initialized? (get-in updated-game [:players 0]))
-    (is (= 1350 (get-in updated-game [:players 0 :total-score])))
-    ))
+    (is (= player1 (:current-player updated-game)))
+    (is (= "player2" (get-in updated-game [:players 1 :name])))
+    (is-turn-initialized? (get-in updated-game [:players 1]))
+    (is (= 1350 (get-in updated-game [:players 1 :total-score])))
+    (is (:score-disabled? updated-game))
+    (is (not (:roll-disabled? updated-game)))))
