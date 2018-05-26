@@ -159,8 +159,10 @@
   (let [player {:available-dice 6
                 :rolled []
                 :held []
+                :held-score 0
                 :roll-holds []
-                :roll-holds-score 0}
+                :roll-holds-score 0
+                :total-held-score 0}
         game {:current-player player}
         updated-game (game/roll-dice game)
         updated-player (:current-player updated-game)]
@@ -346,6 +348,7 @@
                     :held-score 150
                     :roll-holds []
                     :roll-holds-score 0
+                    :total-held-score 0
                     :available-dice 4
                     :total-score 1000}
             updated-player (:current-player (game/roll-dice {:current-player player}))]
@@ -354,14 +357,14 @@
         (is (= 0 (:held-score updated-player)))
         (is (= [[1 5]] (:roll-holds updated-player)))
         (is (= 150 (:roll-holds-score updated-player)))
-        (is (= 150 (:total-held-score updated-player)))
-        ))
+        (is (= 150 (:total-held-score updated-player)))))
     (testing "second roll again"
       (let [player {:rolled [3 4 6]
                     :held [1]
                     :held-score 100
                     :roll-holds [[1 5]]
                     :roll-holds-score 150
+                    :total-held-score 150
                     :available-dice 3
                     :total-score 1000}
             updated-player (:current-player (game/roll-dice {:current-player player}))]
@@ -370,14 +373,14 @@
         (is (= 0 (:held-score updated-player)))
         (is (= [[1 5] [1]] (:roll-holds updated-player)))
         (is (= 250 (:roll-holds-score updated-player)))
-        (is (= 250 (:total-held-score updated-player)))
-        ))
+        (is (= 250 (:total-held-score updated-player)))))
     (testing "hold, roll, hold"
       (let [player {:rolled [1 1 3 4 5 6]
                     :held []
                     :held-score 0
                     :roll-holds [[1 2 3 4 5 6]]
                     :roll-holds-score 1500
+                    :total-held-score 1500
                     :available-dice 6
                     :total-score 1000}
             updated-player (:current-player (game/hold-dice {:current-player player} 0))]
@@ -385,14 +388,14 @@
         (is (= 100 (:held-score updated-player)))
         (is (= [[1 2 3 4 5 6]] (:roll-holds updated-player)))
         (is (= 1500 (:roll-holds-score updated-player)))
-        (is (= 1600 (:total-held-score updated-player)))
-        ))
+        (is (= 1600 (:total-held-score updated-player)))))
     (testing "hold, roll, hold, hold"
       (let [player {:rolled [1 3 4 5 6]
                     :held [1]
                     :held-score 100
                     :roll-holds [[1 2 3 4 5 6]]
                     :roll-holds-score 1500
+                    :total-held-score 1600
                     :available-dice 5
                     :total-score 1000}
             updated-player (:current-player (game/hold-dice {:current-player player} 0))]
@@ -400,8 +403,7 @@
         (is (= 200 (:held-score updated-player)))
         (is (= [[1 2 3 4 5 6]] (:roll-holds updated-player)))
         (is (= 1500 (:roll-holds-score updated-player)))
-        (is (= 1700 (:total-held-score updated-player)))
-        ))))
+        (is (= 1700 (:total-held-score updated-player)))))))
 
 (deftest test-farkle-player
   (let [player {:rolled [4 6]
@@ -432,26 +434,30 @@
       (is (= 1000 (:total-score updated-player))))))
 
 (deftest test-score-player
-  (let [player {:held-score 1500
+  (let [player {:total-held-score 1500
                 :total-score 3500}
         updated-player (game/score-player player)]
     (is (= 5000 (:total-score updated-player)))))
 
 (defn is-turn-initialized?
-  [{:keys [rolled held held-score roll-holds available-dice]}]
+  [{:keys [rolled held held-score total-held-score roll-holds roll-holds-score available-dice]}]
   (and
     (is (= [] rolled) "rolled should be empty")
     (is (= [] held) "held should be empty")
     (is (= [] roll-holds) "roll-holds should be empty")
+    (is (zero? roll-holds-score) "roll-holds-score should be 0")
     (is (zero? held-score) "held-score should be 0")
+    (is (zero? total-held-score) "total-held-score should be 0")
     (is (= 6 available-dice) "available-dice should be 6")))
 
 (deftest test-initialize-turn
   (let [player {:name "player1"
                 :rolled [4 6]
                 :held [1]
-                :held-score 350
+                :held-score 100
                 :roll-holds [[1 5] [1]]
+                :roll-holds-score 250
+                :total-held-score 350
                 :available-dice 2
                 :total-score 1000}
          updated-player (game/initialize-turn player)]
@@ -468,14 +474,18 @@
                  :rolled []
                  :held []
                  :held-score 0
+                 :total-held-score 0
                  :roll-holds []
+                 :roll-holds-score 0
                  :available-dice 6
                  :total-score 2000}
         player2 {:name "player2"
                  :rolled [4 6]
                  :held [1]
-                 :held-score 350
+                 :held-score 100
+                 :total-held-score 350
                  :roll-holds [[1 5] [1]]
+                 :roll-holds-score 250
                  :available-dice 2
                  :total-score 1000}
         game {:current-player player2

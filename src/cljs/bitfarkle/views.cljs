@@ -99,7 +99,7 @@
 (defn active-game []
   (let [players (listen :players)
         current-player (listen :current-player)
-        {:keys [rolled held held-score scorable]} current-player
+        {:keys [rolled held total-held-score scorable]} current-player
         roll-disabled? (listen :roll-disabled?)
         score-disabled? (listen :score-disabled?)]
     [:div
@@ -113,7 +113,7 @@
       [:div
        {:class "col"}
        [:strong "Held Total: "]
-       held-score]]
+       total-held-score]]
      [:div
       {:class "row"}
       [:hr]]

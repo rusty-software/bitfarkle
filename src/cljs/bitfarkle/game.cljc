@@ -168,12 +168,15 @@
   "Given a game, moves the current player's held dice to a history, clears the held dice,
   then rolls the available number of dice and updates the rolled value."
   [game]
-  (let [{:keys [available-dice held roll-holds roll-holds-score] :as player} (:current-player game)
+  (let [{:keys [available-dice held held-score roll-holds roll-holds-score total-held-score] :as player} (:current-player game)
         rolled (roll available-dice)
         unfarkled (scorable rolled)
         updated-player (if unfarkled
                          (assoc player :held []
+                                       :held-score 0
                                        :roll-holds (if (seq held) (conj roll-holds held) roll-holds)
+                                       :roll-holds-score (+ roll-holds-score held-score)
+                                       :total-held-score (+ total-held-score held-score)
                                        :rolled rolled
                                        :scorable unfarkled)
                          (farkle-player player))]
@@ -257,8 +260,8 @@
 
 (defn score-player
   "Given a player, adds the player's held amount to their score."
-  [{:keys [held-score] :as player}]
-  (update player :total-score + held-score))
+  [{:keys [total-held-score] :as player}]
+  (update player :total-score + total-held-score))
 
 (defn initialize-turn
   "Given a player, sets the player attributes appropriately for beginning a turn."
@@ -267,7 +270,9 @@
       (assoc :rolled []
              :held []
              :held-score 0
+             :total-held-score 0
              :roll-holds []
+             :roll-holds-score 0
              :available-dice 6)))
 
 (defn idx-by-name
