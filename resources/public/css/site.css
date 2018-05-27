@@ -52,3 +52,14 @@
 .tinydice.dice-6 {
   background-image: url(../img/dice-6.png);
 }
+
+.tinyf {
+  width: 15px;
+  height: 15ps;
+  margin: 1px;
+  background-size: 100% 100%;
+  background-repeat: no-repeat;
+  background-position: center;
+  background-image: url(../img/f-400.png);
+  }
+

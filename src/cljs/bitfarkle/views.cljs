@@ -211,7 +211,16 @@
            :class "row"}
           [:div
            {:class "col"}
-           (str (:name player) " " (apply str (for [_ (range farkles)] "F")))]
+           [:div
+            {:class "row"}
+            (if (< 0 farkles)
+              (for [_ (range farkles)]
+                [:div
+                 {:class "tinyf"
+                  :style {:height "15px" :width "15px"}}]))
+            [:div
+             {:class "col"}
+             (:name player)]]]
           [:div
            {:class "col"}
            (str "Total Score: " (:total-score player))]]))]))
