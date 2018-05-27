@@ -1,15 +1,16 @@
 .dice {
   width: 95px;
   height: 95px;
-  background-size: 95% 95%;
+  background-size: 75% 75%;
   background-repeat: no-repeat;
+  backgrou-position: center;
 }
 
 .tinydice {
   width: 50px;
   height: 50px;
   margin: 2px;
-  background-size: 50% 50%;
+  background-size: 75% 75%;
   background-repeat: no-repeat;
   background-position: center;
   }

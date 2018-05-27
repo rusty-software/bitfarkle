@@ -85,14 +85,13 @@
        "Start Game"]]
      [:div
       {:class "row alert alert-primary"}
-      [:h3 "Players"]]
+      "Players"]
      (doall
        (for [[idx player] (map-indexed vector players)]
          [:div
           {:key idx
            :class "row"}
-          (:name player)]))
-     ]))
+          (:name player)]))]))
 
 (defn active-game []
   (let [my-turn? (listen :my-turn?)
@@ -103,126 +102,125 @@
         score-disabled? (listen :score-disabled?)
         final-round? (listen :final-round?)]
     [:div
-     (when final-round?
+     [:div
+      {:class "border"}
+      (when final-round?
+        [:div
+         {:class "row"}
+         [:div
+          {:class "col text-center"}
+          [:h3
+           {:class "alert alert-info"}
+           "FINAL ROUND!"]]])
+      [:div
+       {:class "row"}
+       (when (and (not (nil? rolled))
+                  (not scorable))
+         [:div
+          {:class "col text-center"}
+          [:h3
+           {:class "alert alert-danger"}
+           "FARKLED!!"]])]
+      [:div
+       {:class "row"
+        :id "play-area"}
        [:div
-        {:class "row"}
-        [:div
-         {:class "col text-center"}
-         [:h3
-          {:class "alert alert-info"}
-          "FINAL ROUND!"]]])
-     [:div
-      {:class "row"}
-      (when (and (not (nil? rolled))
-                 (not scorable))
-        [:div
-         {:class "col text-center"}
-         [:h3
-          {:class "alert alert-danger"}
-          "FARKLED!!"]])]
-     [:div
-      {:class "row"
-       :id "play-area"}
-      [:div
-       {:class "col"}
-       [:strong "Current Player: "]
-       (:name current-player)]
-      [:div
-       {:class "col"}
-       [:strong "Held Total: "]
-       total-held-score]]
-     [:div
-      {:class "row"}
-      [:hr]]
-     (when my-turn?
+        {:class "col"}
+        [:strong "Current Player: "]
+        (:name current-player)]
        [:div
-        {:class "row"}
-        [:div
-         {:class "col-1"}]
-        [:div
-         {:class "col-1"}
-         [:button
-          {:class "btn btn-success btn-block"
-           :on-click #(rf/dispatch [:roll-dice])
-           :disabled roll-disabled?}
-          "Roll"]]
-        [:div
-         {:class "col-1"}
-         [:button
-          {:class "btn btn-danger btn-block"
-           :on-click #(rf/dispatch [:end-turn])
-           :disabled score-disabled?}
-          "Score"]]])
-     [:div
-      {:class "row"
-       :style {:height "5px"}}]
-     [:div
-      {:class "row"
-       :style {:height "100px"}}
+        {:class "col"}
+        [:strong "Held Total: "]
+        total-held-score]]
       [:div
-       {:class "col-1"}
-       "Rolled:"]
-      (doall
-        (for [[idx d] (map-indexed vector rolled)]
-          [:div
-           {:key idx
-            :class (str "col-1 dice dice-" d)
-            :on-click #(rf/dispatch [:hold-dice idx])}]))]
-     [:div
-      {:class "row"
-       :style {:height "100px"}}
+       {:class "row"}
+       [:hr]]
+      (when my-turn?
+        [:div
+         {:class "row"}
+         [:div
+          {:class "col-1"}]
+         [:div
+          {:class "col-1"}
+          [:button
+           {:class "btn btn-success btn-block"
+            :on-click #(rf/dispatch [:roll-dice])
+            :disabled roll-disabled?}
+           "Roll"]]
+         [:div
+          {:class "col-1"}
+          [:button
+           {:class "btn btn-danger btn-block"
+            :on-click #(rf/dispatch [:end-turn])
+            :disabled score-disabled?}
+           "Score"]]])
       [:div
-       {:class "col-1"}
-       "Held:"]
-      (doall
-        (for [[idx d] (map-indexed vector held)]
-          [:div
-           {:key idx
-            :class (str "col-1 dice dice-" d)
-            :on-click #(rf/dispatch [:unhold-dice idx])}]))]
-     [:div
-      {:class "row"
-       :style {:height "100px"}}
+       {:class "row"
+        :style {:height "5px"}}]
       [:div
-       {:class "col-1"}
-       "Bucket:"]
-      (doall
-        (for [[h-idx holding] (map-indexed vector roll-holds)]
-          (conj
-            (for [[d-idx d] (map-indexed vector holding)]
-              [:div
-               {:key (str h-idx "-" d-idx)
-                :class (str "tinydice dice-" d)}])
-            [:div
-             {:key (str "separator-" h-idx)
-              :class "bg-dark"
-              :style {:width "3px"
-                      :height "50px"}}])))]
-     [:div
-      {:class "row"}
-      [:hr]]
-     [:div
-      {:class "row"}
-      [:h4 "Players"]]
-
-     [:div
-      {:class "row"}]
-     (doall
-         (for [player players]
+       {:class "row"
+        :style {:height "100px"}}
+       [:div
+        {:class "col-1"}
+        "Rolled:"]
+       (doall
+         (for [[idx d] (map-indexed vector rolled)]
            [:div
-            {:key (:name player)
-             :class "row"}
-            [:div
-             {:class "col"}
-             (:name player)]
-            [:div
-             {:class "col"}
-             (str "Total Score: " (:total-score player))]]))
-     ]))
+            {:key idx
+             :class (str "col-1 dice dice-" d)
+             :on-click #(rf/dispatch [:hold-dice idx])}]))]
+      [:div
+       {:class "row"
+        :style {:height "100px"}}
+       [:div
+        {:class "col-1"}
+        "Held:"]
+       (doall
+         (for [[idx d] (map-indexed vector held)]
+           [:div
+            {:key idx
+             :class (str "col-1 dice dice-" d)
+             :on-click #(rf/dispatch [:unhold-dice idx])}]))]
+      [:div
+       {:class "row"
+        :style {:height "75px"}}
+       [:div
+        {:class "col-1"}
+        "Bucket:"]
+       (doall
+         (for [[h-idx holding] (map-indexed vector roll-holds)]
+           (conj
+             (for [[d-idx d] (map-indexed vector holding)]
+               [:div
+                {:key (str h-idx "-" d-idx)
+                 :class (str "tinydice dice-" d)}])
+             [:div
+              {:key (str "separator-" h-idx)
+               :class "bg-dark"
+               :style {:width "3px"
+                       :height "50px"}}])))]]
+     [:div
+      [:hr]]
+     [:div
+      {:class "row alert alert-primary"}
+      "Players"]
+     (doall
+       (for [player players]
+         [:div
+          {:key (:name player)
+           :class "row"}
+          [:div
+           {:class "col"}
+           (:name player)]
+          [:div
+           {:class "col"}
+           (str "Total Score: " (:total-score player))]]))]))
 
 (defn game-over []
-
-  [:span "game over"])
+  [:div
+   {:class "row alert alert-primary"}
+   "Players"]
+  )
 
 (defn game []
   (condp = (listen :game-state)
