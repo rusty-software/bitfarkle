@@ -76,25 +76,23 @@
 (defn pending-game []
   (let [players (listen :players)]
     [:div
-     {:class "text-center"}
-     [:button
-      {:class "btn btn-primary"
-       :on-click #(rf/dispatch [:start-game])}
-      "Start Game"]
-     [:table
-      {:class "table table-bordered"}
-      [:thead
-       [:tr
-        [:th
-         {:class "text-center"}
-         "Players"]]]
-      [:tbody
-       (doall
-         (for [[idx player] (map-indexed vector players)]
-           [:tr
-            {:key idx}
-            [:td
-             (:name player)]]))]]]))
+     {:class "text-centered"}
+     [:div
+      {:class "row"}
+      [:button
+       {:class "btn btn-primary"
+        :on-click #(rf/dispatch [:start-game])}
+       "Start Game"]]
+     [:div
+      {:class "row alert alert-primary"}
+      [:h3 "Players"]]
+     (doall
+       (for [[idx player] (map-indexed vector players)]
+         [:div
+          {:key idx
+           :class "row"}
+          (:name player)]))
+     ]))
 
 (defn active-game []
   (let [my-turn? (listen :my-turn?)
@@ -223,6 +221,7 @@
      ]))
 
 (defn game-over []
+
   [:span "game over"])
 
 (defn game []
