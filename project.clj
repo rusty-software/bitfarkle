@@ -21,8 +21,8 @@
   :profiles
   {:dev
    {:dependencies [[binaryage/devtools "0.9.10"]]
-
     :plugins      [[lein-figwheel "0.5.16"]]}
+
    :prod { }}
 
   :cljsbuild
@@ -42,7 +42,7 @@
     {:id           "min"
      :source-paths ["src/cljs"]
      :compiler     {:main            bitfarkle.main
-                    :output-to       "public/js/compiled.js"
+                    :output-to       "resources/public/js/compiled/app.js"
                     :optimizations   :advanced
                     :closure-defines {goog.DEBUG false}
                     :pretty-print    false}}
