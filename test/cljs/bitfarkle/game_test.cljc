@@ -567,3 +567,43 @@
     (is (= 1350 (get-in updated-game [:players 1 :total-score])))
     (is (:score-disabled? updated-game))
     (is (not (:roll-disabled? updated-game)))))
+
+(deftest test-update-final-round
+  (let [player {:name "player1"
+                :total-held-score 0
+                :total-score 10000
+                :played-final-round? false}
+        updated-player (game/update-final-round player false)]
+    (is (:played-final-round? updated-player))))
+
+(deftest test-final-round
+  (testing "final round is triggered"
+    (let [player1 {:name "player1"
+                   :total-held-score 1000
+                   :total-score 9000
+                   :played-final-round? false}
+          player2 {:name "player2"
+                   :total-held-score 0
+                   :total-score 9500
+                   :played-final-round? false}
+          updated-game (game/end-turn {:current-player player1
+                                       :players [player1 player2]
+                                       :final-round? false})]
+      (is (:final-round? updated-game))
+      (is (:played-final-round? (get-in updated-game [:players 0])))
+      (is (not (:played-final-round? (get-in updated-game [:players 1]))))))
+  (testing "final round is applied"
+    (let [player1 {:name "player1"
+                   :total-held-score 0
+                   :total-score 10000
+                   :played-final-round? true}
+          player2 {:name "player2"
+                   :total-held-score 100
+                   :total-score 9500
+                   :played-final-round? false}
+          updated-game (game/end-turn {:current-player player2
+                                       :players [player1 player2]
+                                       :final-round? true})]
+      (is (:final-round? updated-game))
+      (is (:played-final-round? (get-in updated-game [:players 0])))
+      (is (:played-final-round? (get-in updated-game [:players 1]))))))

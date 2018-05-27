@@ -85,3 +85,10 @@
     (rf/subscribe [:user])])
   (fn [[game user] _]
     (= (:email user) (get-in game [:current-player :name]))))
+
+(rf/reg-sub
+  :final-round?
+  (fn [_ _]
+    (rf/subscribe [:game]))
+  (fn [game _]
+    (:final-round? game)))

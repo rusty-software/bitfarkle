@@ -27,7 +27,7 @@
 (defn initialize-player
   "Returns a player in the initialized state."
   [player]
-  {:total-score 0
+  {:total-score 9000
    :held-score 0
    :total-held-score 0
    :available-dice 6
@@ -299,13 +299,19 @@
                          (when (= name (:name player))
                            idx)) players)))
 
+(defn update-final-round
+  "Given a player and game-level final round indicator, sets the played-final-round? attribute appropriately."
+  [{:keys [total-score] :as player} final-round?]
+  (assoc player :played-final-round? (or final-round? (<= 10000 total-score))))
+
 (defn end-turn
   "Given a game, updates the players collection with the current player information, sets
    the current player data to a turn-initial state, and moves the next player to current player."
-  [{:keys [current-player players] :as game}]
+  [{:keys [current-player players final-round?] :as game}]
   (let [ending-player (-> current-player
                           (score-player)
-                          (initialize-turn))
+                          (initialize-turn)
+                          (update-final-round final-round?))
         ending-player-idx (idx-by-name players (:name ending-player))
         updated-players (assoc players ending-player-idx ending-player)
         next-idx (if (= (inc ending-player-idx) (count players))
@@ -314,5 +320,6 @@
         next-player (get updated-players next-idx)]
     (assoc game :current-player next-player
                 :players updated-players
+                :final-round? (:played-final-round? ending-player)
                 :roll-disabled? false
                 :score-disabled? true)))

@@ -14,7 +14,7 @@
    [:h2 "BitFarkle!"]
    (when-let [code (listen :game-code)]
      [:h4
-      {:class "bg-success"}
+      {:class "alert alert-success"}
       (str "Game code: " code)])
    (if (listen :logged-in?)
      [:button
@@ -102,8 +102,17 @@
         current-player (listen :current-player)
         {:keys [rolled held roll-holds total-held-score scorable]} current-player
         roll-disabled? (listen :roll-disabled?)
-        score-disabled? (listen :score-disabled?)]
+        score-disabled? (listen :score-disabled?)
+        final-round? (listen :final-round?)]
     [:div
+     (when final-round?
+       [:div
+        {:class "row"}
+        [:div
+         {:class "col text-center"}
+         [:h3
+          {:class "alert alert-info"}
+          "FINAL ROUND!"]]])
      [:div
       {:class "row"}
       (when (and (not (nil? rolled))
@@ -111,7 +120,7 @@
         [:div
          {:class "col text-center"}
          [:h3
-          {:class "bg-danger"}
+          {:class "alert alert-danger"}
           "FARKLED!!"]])]
      [:div
       {:class "row"
