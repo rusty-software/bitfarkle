@@ -219,6 +219,13 @@
 (defn game-over []
   [:div
    [:div
+    {:class "row text-center"}
+    [:div
+     {:class "col"}
+     [:h4
+      {:class "alert alert-secondary"}
+      "Game Over!"]]]
+   [:div
     {:class "row alert alert-primary"}
     "Players"]
    (let [players (listen :players)]
@@ -257,7 +264,7 @@
         (if (= :no-game view)
           [no-game]
           [game])))]
-   (when config/debug?
+   #_(when config/debug?
      [:div
       [:hr]
       [:pre
