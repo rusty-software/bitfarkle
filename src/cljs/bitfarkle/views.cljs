@@ -141,19 +141,19 @@
          [:div
           {:class "col-1"}]
          [:div
-          {:class "col-1"}
+          {:class "col-2"}
           [:button
            {:class "btn btn-success btn-block"
             :on-click #(rf/dispatch [:roll-dice])
             :disabled roll-disabled?}
            "Roll"]]
          [:div
-          {:class "col-1"}
+          {:class "col-2"}
           [:button
            {:class "btn btn-danger btn-block"
             :on-click #(rf/dispatch [:end-turn])
             :disabled score-disabled?}
-           "Score"]]])
+           (if (:farkled? current-player) "End Turn" "Score")]]])
       [:div
        {:class "row"
         :style {:height "5px"}}]
@@ -205,13 +205,13 @@
       {:class "row alert alert-primary"}
       "Players"]
      (doall
-       (for [player players]
+       (for [{:keys [farkles] :as player} players]
          [:div
           {:key (:name player)
            :class "row"}
           [:div
            {:class "col"}
-           (:name player)]
+           (str (:name player) " " (apply str (for [_ (range farkles)] "F")))]
           [:div
            {:class "col"}
            (str "Total Score: " (:total-score player))]]))]))
@@ -264,7 +264,7 @@
         (if (= :no-game view)
           [no-game]
           [game])))]
-   #_(when config/debug?
+   (when config/debug?
      [:div
       [:hr]
       [:pre

@@ -34,6 +34,8 @@
    :held []
    :roll-holds []
    :roll-holds-score 0
+   :farkles 0
+   :farkled? false
    :name (:name player)})
 
 (defn initialize-game
@@ -159,14 +161,19 @@
 
 (defn farkle-player
   "Sets a player's attributes appropriately when farkled."
-  [player]
-  (assoc player :scorable false
-                :held []
-                :held-score 0
-                :total-held-score 0
-                :roll-holds []
-                :roll-holds-score 0
-                :available-dice 6))
+  [{:keys [farkles total-score] :or {farkles 0 total-score 0} :as player}]
+  (let [updated-farkles (if (= 2 farkles) 0 (inc farkles))
+        updated-total-score (if (= 2 farkles) (- total-score 1000) total-score)]
+    (assoc player :scorable false
+                  :held []
+                  :held-score 0
+                  :total-held-score 0
+                  :roll-holds []
+                  :roll-holds-score 0
+                  :available-dice 6
+                  :farkled? true
+                  :total-score updated-total-score
+                  :farkles updated-farkles)))
 
 (defn roll-dice
   "Given a game, moves the current player's held dice to a history, clears the held dice,
@@ -290,6 +297,8 @@
              :total-held-score 0
              :roll-holds []
              :roll-holds-score 0
+             :farkles (if (not (:farkled? player)) 0 (:farkles player))
+             :farkled? false
              :available-dice 6)))
 
 (defn idx-by-name
