@@ -27,7 +27,7 @@
 (defn initialize-player
   "Returns a player in the initialized state."
   [player]
-  {:total-score 9000
+  {:total-score 0
    :held-score 0
    :total-held-score 0
    :available-dice 6
@@ -304,6 +304,20 @@
   [{:keys [total-score] :as player} final-round?]
   (assoc player :played-final-round? (or final-round? (<= 10000 total-score))))
 
+(defn set-winner
+  "Given a collection of players, sets a winner? attribute to those with the highest score."
+  [players]
+  (let [winning-score (apply max (map :total-score players))]
+    (into [] (for [player players]
+               (if (= winning-score (:total-score player))
+                 (assoc player :winner? true)
+                 player)))))
+
+(defn game-over?
+  "Given players, returns true if everyone has played their final round."
+  [players]
+  (every? #(= true %) (map :played-final-round? players)))
+
 (defn end-turn
   "Given a game, updates the players collection with the current player information, sets
    the current player data to a turn-initial state, and moves the next player to current player."
@@ -317,9 +331,14 @@
         next-idx (if (= (inc ending-player-idx) (count players))
                    0
                    (inc ending-player-idx))
-        next-player (get updated-players next-idx)]
+        next-player (get updated-players next-idx)
+        game-over? (game-over? updated-players)
+        updated-players (if game-over?
+                          (set-winner updated-players)
+                          updated-players)]
     (assoc game :current-player next-player
                 :players updated-players
                 :final-round? (:played-final-round? ending-player)
+                :game-over? game-over?
                 :roll-disabled? false
                 :score-disabled? true)))

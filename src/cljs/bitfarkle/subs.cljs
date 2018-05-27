@@ -43,6 +43,7 @@
    [(rf/subscribe [:game])
     (rf/subscribe [:user])])
  (fn [[game user] _]
+   (println "game-over?" (:game-over? game))
    (if (nil? user)
      :not-signed-in
      (condp = (:game-over? game)

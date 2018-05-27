@@ -218,9 +218,27 @@
 
 (defn game-over []
   [:div
-   {:class "row alert alert-primary"}
-   "Players"]
-  )
+   [:div
+    {:class "row alert alert-primary"}
+    "Players"]
+   (let [players (listen :players)]
+     (doall
+       (for [player players
+             :let [row-class (if (:winner? player)
+                               "row alert alert-success"
+                               "row")
+                   col-class (if (:winner? player)
+                               "col h5"
+                               "col")]]
+         [:div
+          {:key (:name player)
+           :class row-class}
+          [:div
+           {:class col-class}
+           (:name player)]
+          [:div
+           {:class col-class}
+           (str "Total Score: " (:total-score player))]])))])
 
 (defn game []
   (condp = (listen :game-state)

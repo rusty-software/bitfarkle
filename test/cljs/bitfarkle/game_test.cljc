@@ -607,3 +607,59 @@
       (is (:final-round? updated-game))
       (is (:played-final-round? (get-in updated-game [:players 0])))
       (is (:played-final-round? (get-in updated-game [:players 1]))))))
+
+(deftest test-winner
+  (testing "single winner"
+    (let [player1 {:name "player1"
+                   :total-held-score 0
+                   :total-score 10000
+                   :played-final-round? true}
+          player2 {:name "player2"
+                   :total-held-score 0
+                   :total-score 9500
+                   :played-final-round? true}
+          updated-players (game/set-winner [player1 player2])]
+      (is (:winner? (get updated-players 0)))
+      (is (not (:winner? (get updated-players 1))))))
+  (testing "tied"
+    (let [player1 {:name "player1"
+                   :total-held-score 0
+                   :total-score 10000
+                   :played-final-round? true}
+          player2 {:name "player2"
+                   :total-held-score 0
+                   :total-score 10000
+                   :played-final-round? true}
+          updated-players (game/set-winner [player1 player2])]
+      (is (:winner? (get updated-players 0)))
+      (is (:winner? (get updated-players 1)))))
+  (testing "players still have final round"
+    (let [player1 {:name "player1"
+                   :total-held-score 0
+                   :total-score 10000
+                   :played-final-round? false}
+          player2 {:name "player2"
+                   :total-held-score 0
+                   :total-score 9500
+                   :played-final-round? true}
+          updated-players (game/set-winner [player1 player2])]
+      (is (:winner? (get updated-players 0)))
+      (is (not (:winner? (get updated-players 1)))))))
+
+(deftest test-game-over?
+  (is (not (game/game-over? [{:played-final-round? true} {:played-final-round? false} {}])))
+  (is (game/game-over? [{:played-final-round? true} {:played-final-round? true}])))
+
+(deftest test-end-game
+  (let [player1 {:name "player1"
+                   :total-held-score 0
+                   :total-score 10000
+                   :played-final-round? true}
+          player2 {:name "player2"
+                   :total-held-score 100
+                   :total-score 9500
+                   :played-final-round? false}
+          updated-game (game/end-turn {:current-player player2
+                                       :players [player1 player2]
+                                       :final-round? true})]
+      (is (:game-over? updated-game))))
