@@ -1,6 +1,6 @@
 (ns bitfarkle.views
   (:require [re-frame.core :as rf]
-            [bitfarkle.subs :as subs]
+            [bitfarkle.subs]
             [clojure.string :as str]
             [cljs.pprint :as pprint]
             [bitfarkle.config :as config]))
@@ -97,7 +97,8 @@
              (:name player)]]))]]]))
 
 (defn active-game []
-  (let [players (listen :players)
+  (let [my-turn? (listen :my-turn?)
+        players (listen :players)
         current-player (listen :current-player)
         {:keys [rolled held roll-holds total-held-score scorable]} current-player
         roll-disabled? (listen :roll-disabled?)
@@ -126,24 +127,25 @@
      [:div
       {:class "row"}
       [:hr]]
-     [:div
-      {:class "row"}
-      [:div
-       {:class "col-1"}]
-      [:div
-       {:class "col-1"}
-       [:button
-        {:class "btn btn-success btn-block"
-         :on-click #(rf/dispatch [:roll-dice])
-         :disabled roll-disabled?}
-        "Roll"]]
-      [:div
-       {:class "col-1"}
-       [:button
-        {:class "btn btn-danger btn-block"
-         :on-click #(rf/dispatch [:end-turn])
-         :disabled score-disabled?}
-        "Score"]]]
+     (when my-turn?
+       [:div
+        {:class "row"}
+        [:div
+         {:class "col-1"}]
+        [:div
+         {:class "col-1"}
+         [:button
+          {:class "btn btn-success btn-block"
+           :on-click #(rf/dispatch [:roll-dice])
+           :disabled roll-disabled?}
+          "Roll"]]
+        [:div
+         {:class "col-1"}
+         [:button
+          {:class "btn btn-danger btn-block"
+           :on-click #(rf/dispatch [:end-turn])
+           :disabled score-disabled?}
+          "Score"]]])
      [:div
       {:class "row"
        :style {:height "5px"}}]

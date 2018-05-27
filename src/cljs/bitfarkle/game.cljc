@@ -273,31 +273,7 @@
                                     :available-dice (count updated-rolled)))]
       (assoc game :current-player updated-player
                   :roll-disabled? (zero? (count updated-held))
-                  :score-disabled? (zero? (count updated-held)))))
-  #_(let [{:keys [held rolled total-held-score]} current-player
-        dice-rank (get held dice-num)
-        basic (vec (seq (best-basic-scorable-from-idx held dice-num)))
-        single (vector (get held dice-num))
-        basic-removed (remove-dice held basic)
-        removable (vec (if (or (zero? (count basic-removed))
-                               (scorable basic-removed))
-                         basic
-                         single))]
-    (if removable
-      (let [original-held-score (calculate-score held)
-            updated-held (remove-dice held removable)
-            updated-held-score (calculate-score updated-held)
-            updated-rolled (add-dice rolled removable)
-            updated-player (-> current-player
-                               (assoc :held updated-held
-                                      :held-score updated-held-score
-                                      :total-held-score (+ updated-held-score (- total-held-score original-held-score))
-                                      :rolled updated-rolled
-                                      :available-dice (count updated-rolled)))]
-        (assoc game :current-player updated-player
-                    :roll-disabled? (zero? (count updated-held))
-                    :score-disabled? (zero? (count updated-held))))
-      game)))
+                  :score-disabled? (zero? (count updated-held))))))
 
 (defn score-player
   "Given a player, adds the player's held amount to their score."

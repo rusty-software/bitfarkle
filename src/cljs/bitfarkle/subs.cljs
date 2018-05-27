@@ -77,3 +77,11 @@
     (rf/subscribe [:game]))
   (fn [game _]
     (:score-disabled? game)))
+
+(rf/reg-sub
+  :my-turn?
+  (fn [_ _]
+   [(rf/subscribe [:game])
+    (rf/subscribe [:user])])
+  (fn [[game user] _]
+    (= (:email user) (get-in game [:current-player :name]))))
