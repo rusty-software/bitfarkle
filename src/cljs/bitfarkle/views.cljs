@@ -52,8 +52,7 @@
        :style {:display "inline-block"}
        :on-submit (fn [e]
                     (.preventDefault e)
-                    (println (.. e -target -elements -game -value))
-                    (rf/dispatch [:join-game (str/upper-case (.. e -target -elements -game -value))]))}
+                    (rf/dispatch [:join-game (str/upper-case (.-value (.getElementById js/document "gameCodeInput")))]))}
       [:div
        {:class "form-group"}
        [:input
