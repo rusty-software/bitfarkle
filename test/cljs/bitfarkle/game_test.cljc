@@ -146,13 +146,16 @@
     (is (= 1500 (game/calculate-score [1 2 3 4 5 6]))))
   (testing "3p"
     (is (= 1500 (game/calculate-score [2 2 4 4 6 6])))
-    (is (= 1500 (game/calculate-score [1 1 4 4 5 5]))))
+    (is (= 1500 (game/calculate-score [1 1 4 4 5 5])))
+    (is (= 1500 (game/calculate-score [1 1 1 1 6 6]))))
   (testing "5k+1s"
-    (is (= 900 (game/calculate-score [1 2 2 2 2 2]))))
+    (is (= 900 (game/calculate-score [1 2 2 2 2 2])))
+    (is (= 4050 (game/calculate-score [1 1 1 1 1 5]))))
   (testing "4k+2s"
     (is (= 2100 (game/calculate-score [1 1 1 1 5 5]))))
   (testing "3k+3k"
-    (is (= 800 (game/calculate-score [2 2 2 6 6 6]))))
+    (is (= 800 (game/calculate-score [2 2 2 6 6 6])))
+    (is (= 1500 (game/calculate-score [1 1 1 5 5 5]))))
   (testing "3k+2s+1s"
     (is (= 550 (game/calculate-score [1 1 3 3 3 5])))))
 

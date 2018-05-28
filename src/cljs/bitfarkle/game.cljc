@@ -129,12 +129,16 @@
         singles-score (if (seq singles)
                         (apply + (map score-1 singles))
                         0)]
-    (max six-k-score
-         three-pairs-score
-         straight-score
-         (+ five-k-score singles-score)
-         (+ four-k-score pairs-score singles-score)
-         (+ three-k-score pairs-score singles-score))))
+    (if (and (not (zero? three-pairs-score))
+             (not (zero? four-k-score))
+             (zero? pairs-score))
+      three-pairs-score
+      (max six-k-score
+           three-pairs-score
+           straight-score
+           (+ five-k-score singles-score)
+           (+ four-k-score pairs-score singles-score)
+           (+ three-k-score pairs-score singles-score)))))
 
 (defn has-at-least-trips?
   "Returns true if the dice at least have three of a kind; false otherwise."
