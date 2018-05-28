@@ -88,16 +88,17 @@
   (apply + (map (comp score-1 vector) dice)))
 
 (defn score-3 [dice]
-  (when (= 3 (count dice))
+  (if (= 3 (count dice))
     (if (apply = dice)
       (get basic-score-map dice)
-      (score-multiple-singles dice))))
+      (score-multiple-singles dice))
+    0))
 
 (defn groups-of-count [vals n]
   (filter #(= n (count %)) vals))
 
 (defn calculate-score
-  "Calculates every combination of scorables, returning the highest score value."
+  "Calculates every combination of scorables, returning the highest score value (not counting exceptions)."
   [dice]
   (let [dice-groups (group-by identity dice)
         vals (vals dice-groups)
@@ -160,7 +161,7 @@
   [num-to-roll]
   (sort
     (into []
-          (for [_ (range 1 (inc num-to-roll))]
+          (for [_ (range num-to-roll)]
             (inc (rand-int 6))))))
 
 (defn farkle-player
