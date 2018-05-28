@@ -1,7 +1,7 @@
 (ns bitfarkle.main
   (:require [reagent.core :as reagent]
             [re-frame.core :as rf]
-            [bitfarkle.events :as events]
+            [bitfarkle.events]
             [bitfarkle.views :as views]
             [bitfarkle.config :as config]
             [bitfarkle.firebase :as firebase]))

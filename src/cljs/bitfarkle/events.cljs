@@ -1,6 +1,5 @@
 (ns bitfarkle.events
   (:require [re-frame.core :as rf]
-            [bitfarkle.config]
             [bitfarkle.db :as db]
             [bitfarkle.game :as game]
             [com.degel.re-frame-firebase]

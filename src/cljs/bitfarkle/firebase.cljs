@@ -27,10 +27,13 @@
   (let [on-success (and on-success (re-utils/event->fn on-success))
         on-failure (and on-failure (re-utils/event->fn on-failure))]
     (fn [err]
-      (cond (nil? err) (when on-success (on-success))
+      (cond (nil? err)
+            (when on-success (on-success))
+
             on-failure (on-failure err)
+
             :else      ;; [TODO] This should use default error handler
-                       (js/console.error "Firebase error:" err)))))
+            (js/console.error "Firebase error:" err)))))
 
 (defn- js->clj-tree [x]
   (-> x
