@@ -12,6 +12,13 @@
   [:div
    {:class "text-center"}
    [:h2 "BitFarkle!"]
+   [:p
+    "Read the "
+    [:a
+     {:href "https://en.wikipedia.org/wiki/Farkle"
+      :target "_blank"}
+     "wiki"]
+    " for information on how to play."]
    (when-let [code (listen :game-code)]
      [:h4
       {:class "alert alert-success"}
@@ -36,9 +43,7 @@
   [:div
    {:class "text-center"}
    [:h3 "Welcome to BitFarkle!"]
-   [:p "Sign in with a Google account by clicking above to join the game."]
-   [:p "Read the "
-    [:a {:href "https://en.wikipedia.org/wiki/Farkle"} "wiki"] " for information on how to play."]])
+   [:p "Sign in with a Google account by clicking above to join the game."]])
 
 (defn no-game []
   [:div
