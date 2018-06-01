@@ -206,7 +206,7 @@
      [:div
       [:hr]]
      [:div
-      {:class "row alert alert-primary"}
+      {:class "alert alert-primary"}
       "Players"]
      (doall
        (for [{:keys [farkles] :as player} players]
