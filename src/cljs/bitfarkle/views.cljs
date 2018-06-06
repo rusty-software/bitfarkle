@@ -31,8 +31,8 @@
      [:div
       [:button
        {:class "btn btn-primary"
-        :on-click #(rf/dispatch [:sign-in])}
-       "Sign in"]
+        :on-click #(rf/dispatch [:sign-in-google])}
+       "Sign in with Google"]
       [:br]
       [:span
        {:class "small"}
@@ -43,7 +43,7 @@
   [:div
    {:class "text-center"}
    [:h3 "Welcome to BitFarkle!"]
-   [:p "Sign in with a Google account by clicking above to join the game."]])
+   [:p "Sign in with an email/password or Google account by using the form above."]])
 
 (defn no-game []
   [:div
@@ -281,6 +281,4 @@
      [:div
       [:hr]
       [:pre
-       (with-out-str (pprint/pprint @(rf/subscribe [:db])))]])
-   ]
-  )
+       (with-out-str (pprint/pprint @(rf/subscribe [:db])))]])])

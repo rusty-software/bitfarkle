@@ -14,7 +14,7 @@
  (fn [_ _] {:firebase/sign-out nil}))
 
 (rf/reg-event-fx
- :sign-in
+ :sign-in-google
  (fn [_ _] {:firebase/google-sign-in {:sign-in-method (if config/debug?
                                                         :popup
                                                         :redirect)}}))
