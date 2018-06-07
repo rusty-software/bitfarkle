@@ -31,8 +31,19 @@
      [:div
       [:button
        {:class "btn btn-primary"
+        :style {:margin "5px"}
         :on-click #(rf/dispatch [:sign-in-google])}
-       "Sign in with Google"]
+       "Google sign in"]
+      [:button
+       {:class "btn btn-secondary"
+        :style {:margin "5px"}
+        :on-click #(rf/dispatch [:sign-in-email])}
+       "Other email sign in"]
+      [:button
+       {:class "btn btn-info"
+        :style {:margin "5px"}
+        :on-click #(rf/dispatch [:create-user])}
+       "Create email user"]
       [:br]
       [:span
        {:class "small"}

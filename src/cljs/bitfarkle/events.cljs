@@ -3,7 +3,16 @@
             [bitfarkle.db :as db]
             [bitfarkle.game :as game]
             [com.degel.re-frame-firebase]
-            [bitfarkle.config :as config]))
+            [bitfarkle.config :as config]
+            [com.degel.re-frame-firebase.core :as core]))
+
+#_(defn email-sign-in []
+  (-> (js/firebase.auth)
+      (sign-in auth-provider)
+      (.then (partial maybe-link-with-credential link-with-credential))
+      (.catch (core/default-error-handler))))
+
+
 
 (rf/reg-event-db
  :initialize-db
@@ -15,6 +24,18 @@
 
 (rf/reg-event-fx
  :sign-in-google
+ (fn [_ _] {:firebase/google-sign-in {:sign-in-method (if config/debug?
+                                                        :popup
+                                                        :redirect)}}))
+
+(rf/reg-event-fx
+ :sign-in-email
+ (fn [_ _] {:firebase/google-sign-in {:sign-in-method (if config/debug?
+                                                        :popup
+                                                        :redirect)}}))
+
+(rf/reg-event-fx
+ :create-user
  (fn [_ _] {:firebase/google-sign-in {:sign-in-method (if config/debug?
                                                         :popup
                                                         :redirect)}}))
