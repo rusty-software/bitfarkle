@@ -82,19 +82,17 @@
     [:div
      {:class "text-centered"}
      [:div
-      {:class "row"}
       [:button
        {:class "btn btn-primary"
         :on-click #(rf/dispatch [:start-game])}
        "Start Game"]]
      [:div
-      {:class "row alert alert-primary"}
+      {:class "alert alert-primary"}
       "Players"]
      (doall
        (for [[idx player] (map-indexed vector players)]
          [:div
-          {:key idx
-           :class "row"}
+          {:key idx}
           (:name player)]))]))
 
 (defn active-game []
@@ -231,6 +229,7 @@
 
 (defn game-over []
   [:div
+   {:class "border"}
    [:div
     {:class "row text-center"}
     [:div
@@ -238,27 +237,20 @@
      [:h4
       {:class "alert alert-secondary"}
       "Game Over!"]]]
-   [:div
-    {:class "row alert alert-primary"}
-    "Players"]
    (let [players (listen :players)]
      (doall
-       (for [player players
-             :let [row-class (if (:winner? player)
-                               "row alert alert-success"
-                               "row")
-                   col-class (if (:winner? player)
-                               "col h5"
-                               "col")]]
+       (for [player players]
          [:div
           {:key (:name player)
-           :class row-class}
+           :class "row text-center"}
           [:div
-           {:class col-class}
-           (:name player)]
-          [:div
-           {:class col-class}
-           (str "Total Score: " (:total-score player))]])))])
+           {:class "col"}
+           (if (:winner? player)
+             [:h5
+              {:class "alert alert-success"}
+              (str (:name player) ", Total Score: " (:total-score player))]
+             [:span
+              (str (:name player) ", Total Score: " (:total-score player))])]])))])
 
 (defn game []
   (condp = (listen :game-state)
