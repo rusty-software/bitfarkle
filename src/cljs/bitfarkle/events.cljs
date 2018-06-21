@@ -52,7 +52,9 @@
                                  (let [user-id (get-in db [:user :email])]
                                    (if (some (comp (partial = user-id) :name) players)
                                      players
-                                     (conj (vec players) {:name user-id}))))
+                                     (conj (vec players) {:name user-id
+                                                          :photo-url (get-in db [:user :photo-url])
+                                                          :display-name (get-in db [:user :display-name])}))))
                      :on-success #(println "join game success")
                      :on-failure [:firebase-error]}}))
 
