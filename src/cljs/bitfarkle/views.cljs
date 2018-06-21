@@ -128,8 +128,17 @@
         :id "play-area"}
        [:div
         {:class "col"}
-        [:strong "Current Player: "]
-        (:name current-player)]
+        [:img {:src (:photo-url current-player) :width "50px"}]]
+       [:div
+        {:class "col"}
+        [:strong
+         {:style {:color (if my-turn? "red" "black")}}
+         (let [dn (:display-name current-player)]
+           (str
+             (if (str/blank? dn)
+               (:name current-player)
+               dn)
+             "'s turn"))]]
        [:div
         {:class "col"}
         [:strong "Held Total: "]

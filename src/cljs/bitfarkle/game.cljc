@@ -36,7 +36,9 @@
    :roll-holds-score 0
    :farkles 0
    :farkled? false
-   :name (:name player)})
+   :name (:name player)
+   :photo-url (:photo-url player)
+   :display-name (:display-name player)})
 
 (defn initialize-game
   "Given a game state, initializes a new game."
