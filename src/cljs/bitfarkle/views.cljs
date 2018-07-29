@@ -8,6 +8,13 @@
 (defn listen [query]
   @(rf/subscribe [query]))
 
+(defn start-button []
+  [:button
+   {:class "btn btn-primary"
+    :style {:margin-right "10px"}
+    :on-click #(rf/dispatch [:start-game])}
+   "Start Game"])
+
 (defn header []
   [:div
    {:class "text-center"}
@@ -23,6 +30,10 @@
      [:h4
       {:class "alert alert-success"}
       (str "Game code: " code)])
+   (let [game-state (listen :game-state)]
+     (when (or (= :over game-state)
+               (= :not-started game-state)))
+     [start-button])
    (if (listen :logged-in?)
      [:button
       {:class "btn btn-warning"
@@ -77,23 +88,20 @@
       {:class "btn btn-danger"
        :on-click #(rf/dispatch [:create-game])} "Create new game"]]]])
 
+
+
 (defn pending-game []
   (let [players (listen :players)]
     [:div
      {:class "text-centered"}
      [:div
-      [:button
-       {:class "btn btn-primary"
-        :on-click #(rf/dispatch [:start-game])}
-       "Start Game"]]
-     [:div
       {:class "alert alert-primary"}
       "Players"]
      (doall
-       (for [[idx player] (map-indexed vector players)]
-         [:div
-          {:key idx}
-          (:name player)]))]))
+      (for [[idx player] (map-indexed vector players)]
+        [:div
+         {:key idx}
+         (:name player)]))]))
 
 (defn active-game []
   (let [my-turn? (listen :my-turn?)
