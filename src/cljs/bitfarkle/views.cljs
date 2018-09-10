@@ -169,7 +169,7 @@
          [:div
           {:class "col-2"}
           [:button
-           {:class "btn btn-danger btn-block"
+           {:class "btn btn-dark btn-block"
             :on-click #(rf/dispatch [:end-turn])
             :disabled score-disabled?}
            (if (:farkled? current-player) "End Turn" "Score")]]])
