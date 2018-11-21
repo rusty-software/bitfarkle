@@ -365,8 +365,9 @@
   [{:keys [current-player players] :as game-state} booted-player-idx]
   (let [current-player-idx (idx-by-name players (:name current-player))
         updated-players (vec (concat (subvec players 0 booted-player-idx) (subvec players (inc booted-player-idx))))
-        previous-player-idx (if (and (= current-player-idx booted-player-idx)
-                                     (>= booted-player-idx (count updated-players)))
+        previous-player-idx (if (or (and (= current-player-idx booted-player-idx)
+                                         (>= booted-player-idx (count updated-players)))
+                                    (zero? current-player-idx))
                               (dec (count updated-players))
                               (dec current-player-idx))
         previous-player (get updated-players previous-player-idx)

@@ -88,8 +88,6 @@
       {:class "btn btn-danger"
        :on-click #(rf/dispatch [:create-game])} "Create new game"]]]])
 
-
-
 (defn pending-game []
   (let [players (listen :players)]
     [:div
@@ -110,7 +108,8 @@
         {:keys [rolled held roll-holds total-held-score scorable]} current-player
         roll-disabled? (listen :roll-disabled?)
         score-disabled? (listen :score-disabled?)
-        final-round? (listen :final-round?)]
+        final-round? (listen :final-round?)
+        displaying-boot? (listen :displaying-boot?)]
     [:div
      [:div
       {:class "border"}
@@ -224,7 +223,8 @@
       {:class "alert alert-primary"}
       "Players"]
      (doall
-       (for [{:keys [farkles] :as player} players]
+       (for [i (range (count players))
+             :let [{:keys [farkles] :as player} (get players i)]]
          [:div
           {:key (:name player)
            :class "row"}
@@ -232,6 +232,12 @@
            {:class "col"}
            [:div
             {:class "row"}
+            (when displaying-boot?
+            [:div
+             [:button
+              {:class "btn btn-danger"
+               :on-click #(rf/dispatch [:boot-player i])}
+              "Boot!"]])
             (if (< 0 farkles)
               (for [_ (range farkles)]
                 [:div

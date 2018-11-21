@@ -92,3 +92,10 @@
     (rf/subscribe [:game]))
   (fn [game _]
     (:final-round? game)))
+
+(rf/reg-sub
+ :displaying-boot?
+ (fn [_ _]
+   (rf/subscribe [:game]))
+ (fn [game _]
+   (:displaying-boot? game)))

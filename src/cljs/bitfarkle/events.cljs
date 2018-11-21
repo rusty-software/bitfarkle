@@ -74,6 +74,23 @@
                       :on-success #(println "unhold-dice success")
                       :on-failure [:firebase-error]}}))
 
+
+(rf/reg-event-fx
+  :toggle-boot-buttons
+  (fn [{:keys [db]} [_]]
+    {:firebase/swap! {:path [(keyword (:game-code db)) :displaying-boot?]
+                      :function (fn [display?] (not display?))
+                      :on-success #(println "toggle boot buttons success")
+                      :on-failure [:firebase-error]}}))
+
+(rf/reg-event-fx
+  :boot-player
+  (fn [{:keys [db]} [_ idx]]
+    {:firebase/swap! {:path [(keyword (:game-code db))]
+                      :function #(game/boot-player % idx)
+                      :on-success #(println "boot player success")
+                      :on-failure [:firebase-error]}}))
+
 (defn game-event! [event f & args]
   (let [enabled? (atom true)]
     (rf/reg-event-fx
