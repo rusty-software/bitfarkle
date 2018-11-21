@@ -358,3 +358,19 @@
                 :game-over? game-over?
                 :roll-disabled? false
                 :score-disabled? true)))
+
+(defn boot-player
+  "Given a game and player index, removes the player at the index from the players collection
+   and initializes a new round."
+  [{:keys [current-player players] :as game-state} booted-player-idx]
+  (let [current-player-idx (idx-by-name players (:name current-player))
+        updated-players (vec (concat (subvec players 0 booted-player-idx) (subvec players (inc booted-player-idx))))
+        previous-player-idx (if (and (= current-player-idx booted-player-idx)
+                                     (>= booted-player-idx (count updated-players)))
+                              (dec (count updated-players))
+                              (dec current-player-idx))
+        previous-player (get updated-players previous-player-idx)
+        updated-state (-> game-state
+                          (assoc :players updated-players
+                                 :current-player previous-player))]
+    (end-turn updated-state)))

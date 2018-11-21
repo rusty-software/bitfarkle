@@ -589,6 +589,108 @@
       (is (:score-disabled? updated-game))
       (is (not (:roll-disabled? updated-game))))))
 
+(deftest test-boot-player
+  (let [player1 {:name "player1"
+                 :rolled []
+                 :held []
+                 :held-score 0
+                 :total-held-score 0
+                 :roll-holds []
+                 :roll-holds-score 0
+                 :available-dice 6
+                 :total-score 2000}
+        player2 {:name "player2"
+                 :rolled [4 6]
+                 :held [1]
+                 :held-score 100
+                 :total-held-score 350
+                 :roll-holds [[1 5] [1]]
+                 :roll-holds-score 250
+                 :available-dice 2
+                 :total-score 1000}
+        player3 {:name "player3"
+                 :rolled []
+                 :held []
+                 :held-score 0
+                 :total-held-score 0
+                 :roll-holds []
+                 :roll-holds-score 0
+                 :available-dice 3
+                 :total-score 500}
+        game {:current-player player2
+              :players [player1 player2 player3]}
+        updated-game (game/boot-player game 2)]
+    (is (= 2 (count (:players updated-game))))
+    (is (= player2 (:current-player updated-game)))))
+
+(deftest test-boot-player-current
+  (let [player1 {:name "player1"
+                 :rolled []
+                 :held []
+                 :held-score 0
+                 :total-held-score 0
+                 :roll-holds []
+                 :roll-holds-score 0
+                 :available-dice 6
+                 :total-score 2000}
+        player2 {:name "player2"
+                 :rolled [4 6]
+                 :held [1]
+                 :held-score 100
+                 :total-held-score 350
+                 :roll-holds [[1 5] [1]]
+                 :roll-holds-score 250
+                 :available-dice 2
+                 :total-score 1000}
+        player3 {:name "player3"
+                 :rolled []
+                 :held []
+                 :held-score 0
+                 :total-held-score 0
+                 :roll-holds []
+                 :roll-holds-score 0
+                 :available-dice 3
+                 :total-score 500}
+        game {:current-player player2
+              :players [player1 player2 player3]}
+        updated-game (game/boot-player game 1)]
+    (is (= 2 (count (:players updated-game))))
+    (is (= player3 (:current-player updated-game)))))
+
+(deftest test-boot-player-current-last
+  (let [player1 {:name "player1"
+                 :rolled []
+                 :held []
+                 :held-score 0
+                 :total-held-score 0
+                 :roll-holds []
+                 :roll-holds-score 0
+                 :available-dice 6
+                 :total-score 2000}
+        player2 {:name "player2"
+                 :rolled []
+                 :held []
+                 :held-score 0
+                 :total-held-score 0
+                 :roll-holds []
+                 :roll-holds-score 0
+                 :available-dice 3
+                 :total-score 500}
+        player3 {:name "player3"
+                 :rolled [4 6]
+                 :held [1]
+                 :held-score 100
+                 :total-held-score 350
+                 :roll-holds [[1 5] [1]]
+                 :roll-holds-score 250
+                 :available-dice 2
+                 :total-score 1000}
+        game {:current-player player3
+              :players [player1 player2 player3]}
+        updated-game (game/boot-player game 2)]
+    (is (= 2 (count (:players updated-game))))
+    (is (= player1 (:current-player updated-game)))))
+
 (deftest test-update-final-round
   (let [player {:name "player1"
                 :total-held-score 0
